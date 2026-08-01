@@ -4,7 +4,7 @@ window.APP_CONFIG = Object.freeze({
   LIFF_ID: "2010924806-TX9pddUE",
 
   WEB_APP_URL:
-    "https://script.google.com/macros/s/AKfycbyiAnCWp7ywPU7FDIcw5PtTgjHxBTyOUFPmFhXTxM5S0eGeGKCtETj6qfcA_qtujQdI/exec",
+    "https://script.google.com/macros/s/AKfycby4NK1nVX5aWYmTzArORvk7mMEgZ3dRR-10wtx2h6UjLBot0yr7opzfeAeMLXVyU7P_/exec",
 
   API_ACTIONS: Object.freeze({
     PRODUCTS: "liffGetProducts",
