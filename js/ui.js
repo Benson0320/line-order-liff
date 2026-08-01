@@ -73,14 +73,15 @@
       this.elements.statusPanel.hidden = Boolean(hidden);
     }
 
-    setControlsEnabled(enabled) {
-      this.elements.productSearch.disabled = !enabled;
-      this.elements.quantity.disabled = !enabled;
-      this.elements.decreaseQuantity.disabled = !enabled;
-      this.elements.increaseQuantity.disabled = !enabled;
-      this.elements.paymentFieldset.disabled = !enabled;
-      this.elements.customerName.disabled = !enabled;
-    }
+setControlsEnabled(enabled) {
+    this.elements.productSearch.disabled = !enabled;
+    this.elements.quantity.disabled = !enabled;
+    this.elements.decreaseQuantity.disabled = !enabled;
+    this.elements.increaseQuantity.disabled = !enabled;
+    this.elements.paymentFieldset.disabled = !enabled;
+    this.elements.customerName.disabled = !enabled;
+    this.elements.addToCartButton.disabled = !enabled;
+}
 
     renderCategories(categories, activeCategory, onSelect) {
       const container = this.elements.categoryTabs;
@@ -393,12 +394,14 @@
         utils.buildLineMessage(items);
     }
 
-    setAddButtonMode(mode) {
-      this.elements.addToCartButton.textContent =
+  setAddButtonMode(mode) {
+    this.elements.addToCartButton.disabled = false;
+
+    this.elements.addToCartButton.textContent =
         mode === "update"
-          ? "更新購物車"
-          : "加入購物車";
-    }
+            ? "更新購物車"
+            : "加入購物車";
+}
 
     setSubmitting(submitting) {
       this.elements.submitAllButton.disabled =
