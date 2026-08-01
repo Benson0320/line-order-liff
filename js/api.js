@@ -18,32 +18,63 @@
     return url.toString();
   }
 
-  async function requestJson(action, params = {}) {
-    const url = buildApiUrl(action, params);
+  function requestJsonp(action, params = {}) {
+    return new Promise((resolve, reject) => {
+      const callbackName =
+        "__lhoJsonp_" +
+        Date.now() +
+        "_" +
+        Math.random().toString(36).slice(2, 9);
 
-    const request = fetch(url, {
-      method: "GET",
-      cache: "no-store",
-      redirect: "follow"
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`API 回應錯誤：HTTP ${response.status}`);
+      const script = document.createElement("script");
+      const url = buildApiUrl(action, {
+        ...params,
+        callback: callbackName,
+        _: Date.now()
+      });
+
+      let timeoutId;
+
+      function cleanup() {
+        window.clearTimeout(timeoutId);
+        script.remove();
+
+        try {
+          delete global[callbackName];
+        } catch (error) {
+          global[callbackName] = undefined;
+        }
       }
 
-      const text = await response.text();
+      global[callbackName] = (payload) => {
+        cleanup();
+        resolve(payload);
+      };
 
-      try {
-        return JSON.parse(text);
-      } catch (error) {
-        throw new Error("API 回傳內容不是有效 JSON。");
-      }
+      script.src = url;
+      script.async = true;
+      script.referrerPolicy = "no-referrer";
+
+      script.onerror = () => {
+        cleanup();
+        reject(
+          new Error(
+            "商品 API 載入失敗，請確認 Apps Script 已部署為任何人可存取。"
+          )
+        );
+      };
+
+      timeoutId = window.setTimeout(() => {
+        cleanup();
+        reject(
+          new Error(
+            `商品 API 超過 ${config.REQUEST_TIMEOUT_MS / 1000} 秒仍未回應。`
+          )
+        );
+      }, config.REQUEST_TIMEOUT_MS);
+
+      document.head.appendChild(script);
     });
-
-    return utils.withTimeout(
-      request,
-      config.REQUEST_TIMEOUT_MS,
-      "商品 API"
-    );
   }
 
   function normalizeProducts(payload) {
@@ -76,7 +107,7 @@
   }
 
   async function getProducts() {
-    const payload = await requestJson(
+    const payload = await requestJsonp(
       config.API_ACTIONS.PRODUCTS
     );
 
@@ -90,7 +121,7 @@
   }
 
   async function healthCheck() {
-    return requestJson(config.API_ACTIONS.HEALTH);
+    return requestJsonp(config.API_ACTIONS.HEALTH);
   }
 
   global.ProductApi = Object.freeze({

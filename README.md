@@ -1,115 +1,46 @@
-# LINE Hair Salon Ordering System
+# LIFF 商品 API 跨網域修正版
 
-美髮沙龍設計師使用的 LINE 圖形化叫貨系統。
+## 問題
 
-本專案透過 LIFF 提供商品搜尋、多商品購物車、付款狀態與客戶名稱輸入，最後將資料以既有 LINE Bot 可解析的格式送回 LINE 群組。
+GitHub Pages 與 Apps Script 位於不同網域。
 
-## 專案定位
+瀏覽器直接使用 `fetch()` 讀取 Apps Script ContentService 時，
+在部分 LINE WebView 會因跨網域限制而失敗。
 
-這是：
+## 修正方式
 
-- 美髮設計師叫貨系統
-- 進貨與商品統計系統
-- Google Sheet 與 LINE Bot 的圖形化操作入口
+改用 JSONP：
 
-這不是：
+- Apps Script 支援 `callback` 參數。
+- GitHub Pages 的 `api.js` 以動態 `<script>` 讀取商品。
+- 不需要修改原 LINE Bot、Google Sheet 或 doPost(e)。
 
-- 餐飲點餐系統
-- 電商付款系統
-- 線上商城
+## 要覆蓋的檔案
 
-## V1 功能
+1. Apps Script：
+   `AppsScript/Liff.gs`
 
-- 商品依代號排序
-- 商品代號或名稱搜尋
-- 商品分類預留
-- 多商品購物車
-- 數量加減與手動輸入
-- 客戶名稱
-- 付款狀態：
-  - 已付款
-  - 未付款
-  - 自領
-- 同商品、同客戶時覆蓋數量與付款
-- 同商品、不同客戶時保留不同資料
-- 一次送出多筆到 LINE 群組
-- 保持既有 LINE Bot 與 Google Sheet 相容
+2. GitHub：
+   `js/api.js`
 
-## 固定訊息格式
+## Apps Script 操作
 
-```text
-A02 10 已付款 小明
-```
+覆蓋 Liff.gs 後：
 
-多筆資料：
+部署 → 管理部署作業 → 編輯 → 新版本 → 部署
 
-```text
-A02 10 已付款 小明
-A08 2 自領 小華
-```
+測試：
 
-## 技術架構
+WEB_APP_URL?action=liffGetProducts&callback=testCallback
 
-```text
-LINE 群組
-  ↓
-LIFF
-  ↓
-GitHub Pages
-  ↓
-Google Apps Script API
-  ↓
-Google Sheet
-  ↓
-既有 LINE Bot
-```
+頁面會顯示：
 
-## 目錄
+testCallback({...});
 
-```text
-line-hair-ordering-system/
-├── AI_CONTEXT.md
-├── README.md
-├── docs/
-├── src/
-│   ├── index.html
-│   ├── css/
-│   └── js/
-└── AppsScript/
-```
+## GitHub 操作
 
-## 文件索引
+用新 `js/api.js` 覆蓋 GitHub 根目錄的：
 
-- [AI 開發上下文](AI_CONTEXT.md)
-- [產品規格](docs/PRODUCT_SPEC.md)
-- [商業規則](docs/BUSINESS_RULE.md)
-- [系統架構](docs/ARCHITECTURE.md)
-- [API 規格](docs/API.md)
-- [資料結構](docs/DATABASE.md)
-- [指令規格](docs/COMMAND.md)
-- [UI 規格](docs/UI_SPEC.md)
-- [安裝說明](docs/INSTALL.md)
-- [測試案例](docs/TEST_CASE.md)
-- [版本資訊](docs/VERSION.md)
-- [變更紀錄](docs/CHANGELOG.md)
+js/api.js
 
-## 目前階段
-
-目前為：
-
-```text
-v1.0.0-alpha.3
-Milestone 3
-```
-
-已完成：
-
-- 專案文件
-- 前端 HTML 骨架
-- CSS 基礎樣式
-
-尚未完成：
-
-- 正式 Apps Script 專案合併
-- Web App 新版本部署
-- GitHub Pages 與 LINE 群組整合測試
+Commit 後等待 GitHub Pages 更新，再重新開啟 LIFF。
