@@ -110,10 +110,27 @@
     return accessToken;
   }
 
-  function readCachedPayload() {
+  async function getCurrentOrdersCacheKey(accessToken) {
+    if (!global.crypto?.subtle || typeof TextEncoder === "undefined") return null;
+
+    const digest = await global.crypto.subtle.digest(
+      "SHA-256",
+      new TextEncoder().encode(accessToken)
+    );
+    const fingerprint = Array.from(new Uint8Array(digest))
+      .slice(0, 12)
+      .map((value) => value.toString(16).padStart(2, "0"))
+      .join("");
+
+    return `${config.STORAGE_KEYS.CURRENT_ORDERS}:${fingerprint}`;
+  }
+
+  function readCachedPayload(cacheKey) {
+    if (!cacheKey) return null;
+
     try {
       const cached = JSON.parse(
-        sessionStorage.getItem(config.STORAGE_KEYS.CURRENT_ORDERS) || "null"
+        sessionStorage.getItem(cacheKey) || "null"
       );
       if (
         !cached
@@ -126,10 +143,12 @@
     }
   }
 
-  function cachePayload(payload) {
+  function cachePayload(cacheKey, payload) {
+    if (!cacheKey) return;
+
     try {
       sessionStorage.setItem(
-        config.STORAGE_KEYS.CURRENT_ORDERS,
+        cacheKey,
         JSON.stringify({ payload, cachedAt: Date.now() })
       );
     } catch (error) {
@@ -168,9 +187,18 @@
       const accessToken = await getVerifiedAccessToken();
       if (!accessToken) return;
 
+      const cacheKey = await getCurrentOrdersCacheKey(accessToken);
+      const cachedPayload = readCachedPayload(cacheKey);
+
+      if (!hasCachedPayload && cachedPayload) {
+        renderPayload(cachedPayload);
+        hasCachedPayload = true;
+        elements.badge.textContent = "更新中";
+      }
+
       const payload = await api.getCurrentOrders(accessToken);
       renderPayload(payload);
-      cachePayload(payload);
+      cachePayload(cacheKey, payload);
       hasCachedPayload = true;
       elements.badge.textContent = payload.scope === "all"
         ? "管理員"
@@ -194,12 +222,6 @@
 
   elements.refreshButton.addEventListener("click", loadCurrentOrders);
   document.addEventListener("DOMContentLoaded", () => {
-    const cachedPayload = readCachedPayload();
-    if (cachedPayload) {
-      renderPayload(cachedPayload);
-      hasCachedPayload = true;
-      elements.badge.textContent = "更新中";
-    }
     loadCurrentOrders();
   });
 })(window);
