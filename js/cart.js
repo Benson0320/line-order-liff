@@ -52,6 +52,7 @@
         !customerName ||
         !Number.isInteger(quantity) ||
         quantity < 1 ||
+        quantity > config.MAX_QUANTITY ||
         !config.PAYMENT_STATUSES.includes(paymentStatus)
       ) {
         return null;

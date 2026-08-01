@@ -28,6 +28,7 @@ Milestone 3
 - Google Sheet 直接讀取備援
 - 商品欄位名稱相容
 - doGet 合併說明
+- 單筆商品數量限制為 1～99
 
 尚未完成：
 
