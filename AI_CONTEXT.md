@@ -56,6 +56,7 @@ A08 2 自領 小華
 - Google Apps Script
 - Google Sheets
 - LINE Messaging API
+- Apps Script 更新固定沿用既有 Web App deployment ID，使 `js/config.js` 的 `WEB_APP_URL` 保持不變
 
 流程：
 

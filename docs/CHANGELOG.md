@@ -34,6 +34,7 @@
 
 ### Pending
 
+- 固定沿用既有 Apps Script Web App deployment ID，避免每次發布重貼 `WEB_APP_URL`
 - Apps Script 實際專案合併。
 - Web App 新版本部署。
 - GitHub Pages 實機讀取商品。

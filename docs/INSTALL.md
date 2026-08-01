@@ -100,6 +100,10 @@ LIFF Scope 建議：
 
 ## 6. 重新部署
 
+Apps Script 後端應固定沿用同一個 Web App deployment ID。更新既有 deployment 時 `/exec` URL 不會改變，因此 `js/config.js` 的 `WEB_APP_URL` 只需設定一次，不必在每次版本發布時重貼網址。
+
+只有建立全新的 Web App deployment 時，才需要同步修改 `WEB_APP_URL`；一般更新請勿新增 deployment。
+
 前端：
 
 ```text
