@@ -22,10 +22,13 @@ window.APP_CONFIG = Object.freeze({
   DEFAULT_QUANTITY: 1,
   MAX_QUANTITY: 99,
   REQUEST_TIMEOUT_MS: 12000,
+  CURRENT_ORDERS_TIMEOUT_MS: 8000,
+  CURRENT_ORDERS_CACHE_MS: 300000,
   SEND_TIMEOUT_MS: 12000,
 
   STORAGE_KEYS: Object.freeze({
     CART: "lineHairOrdering.cart.v1",
+    CURRENT_ORDERS: "lineHairOrdering.currentOrders.v1",
     RECENT_PRODUCTS: "lineHairOrdering.recentProducts.v1"
   })
 });

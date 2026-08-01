@@ -130,6 +130,8 @@ Apps Script 唯讀 ORDERS
 顯示使用者有權查看的目前叫貨
 ```
 
+前端只在記憶體重用 LIFF 初始化與 access token；叫貨結果使用五分鐘 sessionStorage 快取，立即顯示後再背景更新。API 暫時失敗會自動重試一次。
+
 ## 6. 部署
 
 前端：

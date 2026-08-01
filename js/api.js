@@ -18,7 +18,11 @@
     return url.toString();
   }
 
-  function requestJsonp(action, params = {}) {
+  function requestJsonp(
+    action,
+    params = {},
+    timeoutMs = config.REQUEST_TIMEOUT_MS
+  ) {
     return new Promise((resolve, reject) => {
       const callbackName =
         "__lhoJsonp_" +
@@ -68,10 +72,10 @@
         cleanup();
         reject(
           new Error(
-            `商品 API 超過 ${config.REQUEST_TIMEOUT_MS / 1000} 秒仍未回應。`
+            `資料 API 超過 ${timeoutMs / 1000} 秒仍未回應。`
           )
         );
-      }, config.REQUEST_TIMEOUT_MS);
+      }, timeoutMs);
 
       document.head.appendChild(script);
     });
@@ -129,10 +133,21 @@
       throw new Error("缺少 LINE 登入驗證，請重新開啟頁面。");
     }
 
-    const payload = await requestJsonp(
-      config.API_ACTIONS.CURRENT_ORDERS,
-      { accessToken }
-    );
+    let payload;
+
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        payload = await requestJsonp(
+          config.API_ACTIONS.CURRENT_ORDERS,
+          { accessToken },
+          config.CURRENT_ORDERS_TIMEOUT_MS
+        );
+        break;
+      } catch (error) {
+        if (attempt === 1) throw error;
+        await new Promise((resolve) => global.setTimeout(resolve, 500));
+      }
+    }
 
     if (payload?.success === false) {
       throw new Error(

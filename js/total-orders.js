@@ -2,6 +2,9 @@
   "use strict";
 
   const api = global.ProductApi;
+  const config = global.APP_CONFIG;
+  let accessTokenPromise = null;
+  let hasCachedPayload = false;
   const elements = {
     badge: document.getElementById("connectionBadge"),
     pageTitle: document.getElementById("pageTitle"),
@@ -75,6 +78,19 @@
   }
 
   async function getVerifiedAccessToken() {
+    if (accessTokenPromise) return accessTokenPromise;
+
+    accessTokenPromise = initializeVerifiedAccessToken();
+
+    try {
+      return await accessTokenPromise;
+    } catch (error) {
+      accessTokenPromise = null;
+      throw error;
+    }
+  }
+
+  async function initializeVerifiedAccessToken() {
     if (typeof global.liff === "undefined") {
       throw new Error("LIFF SDK 載入失敗，請檢查網路連線。");
     }
@@ -92,6 +108,42 @@
     }
 
     return accessToken;
+  }
+
+  function readCachedPayload() {
+    try {
+      const cached = JSON.parse(
+        sessionStorage.getItem(config.STORAGE_KEYS.CURRENT_ORDERS) || "null"
+      );
+      if (
+        !cached
+        || !Array.isArray(cached.payload?.orders)
+        || Date.now() - cached.cachedAt > config.CURRENT_ORDERS_CACHE_MS
+      ) return null;
+      return cached.payload;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function cachePayload(payload) {
+    try {
+      sessionStorage.setItem(
+        config.STORAGE_KEYS.CURRENT_ORDERS,
+        JSON.stringify({ payload, cachedAt: Date.now() })
+      );
+    } catch (error) {
+      // 快取失敗不影響正式資料顯示
+    }
+  }
+
+  function renderPayload(payload) {
+    applyScope(payload.scope);
+    const designerCount = renderOrders(payload.orders);
+    elements.designerCount.textContent = String(designerCount);
+    elements.orderCount.textContent = String(payload.orders.length);
+    elements.totalQuantity.textContent = String(payload.totalQuantity || 0);
+    elements.updatedAt.textContent = `更新時間：${new Date(payload.updatedAt).toLocaleString("zh-TW")}`;
   }
 
   function applyScope(scope) {
@@ -117,28 +169,37 @@
       if (!accessToken) return;
 
       const payload = await api.getCurrentOrders(accessToken);
-      applyScope(payload.scope);
-      const designerCount = renderOrders(payload.orders);
-      elements.designerCount.textContent = String(designerCount);
-      elements.orderCount.textContent = String(payload.orders.length);
-      elements.totalQuantity.textContent = String(payload.totalQuantity || 0);
-      elements.updatedAt.textContent = `更新時間：${new Date(payload.updatedAt).toLocaleString("zh-TW")}`;
+      renderPayload(payload);
+      cachePayload(payload);
+      hasCachedPayload = true;
       elements.badge.textContent = payload.scope === "all"
         ? "管理員"
         : "個人資料";
       elements.badge.dataset.state = "success";
       elements.statusPanel.hidden = true;
     } catch (error) {
-      elements.badge.textContent = "讀取失敗";
-      elements.badge.dataset.state = "error";
-      elements.statusPanel.dataset.state = "error";
-      elements.statusTitle.textContent = "目前叫貨讀取失敗";
-      elements.statusMessage.textContent = error.message || String(error);
+      elements.badge.textContent = hasCachedPayload ? "顯示上次資料" : "讀取失敗";
+      elements.badge.dataset.state = hasCachedPayload ? "warning" : "error";
+      elements.statusPanel.dataset.state = hasCachedPayload ? "warning" : "error";
+      elements.statusTitle.textContent = hasCachedPayload
+        ? "最新資料暫時無法取得"
+        : "目前叫貨讀取失敗";
+      elements.statusMessage.textContent = hasCachedPayload
+        ? "已保留上次成功資料，可稍後重新整理。"
+        : error.message || String(error);
     } finally {
       elements.refreshButton.disabled = false;
     }
   }
 
   elements.refreshButton.addEventListener("click", loadCurrentOrders);
-  document.addEventListener("DOMContentLoaded", loadCurrentOrders);
+  document.addEventListener("DOMContentLoaded", () => {
+    const cachedPayload = readCachedPayload();
+    if (cachedPayload) {
+      renderPayload(cachedPayload);
+      hasCachedPayload = true;
+      elements.badge.textContent = "更新中";
+    }
+    loadCurrentOrders();
+  });
 })(window);
