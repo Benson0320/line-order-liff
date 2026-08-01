@@ -1,368 +1,290 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
-      margin: 0;
-      padding: 14px 14px calc(110px + env(safe-area-inset-bottom));
-      background: #f5f6f8;
-      color: #222;
-    }
-    h1 { font-size: 22px; margin: 8px 0 6px; }
-    .subtitle { color: #777; font-size: 13px; margin-bottom: 14px; }
-    .status { font-size: 14px; color: #777; margin-bottom: 12px; }
-    .error { color: #c0392b; white-space: pre-wrap; }
-    .panel {
-      background: #fff;
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,.06);
-    }
-    .panel-title { font-weight: 700; font-size: 15px; margin-bottom: 10px; }
-    .search-input, .customer-input {
-      width: 100%;
-      border: 1px solid #dcdfe4;
-      border-radius: 10px;
-      padding: 12px;
-      font-size: 16px;
-      outline: none;
-      background: #fff;
-    }
-    .search-input:focus, .customer-input:focus { border-color: #06c755; }
-    .product-list { max-height: 320px; overflow-y: auto; padding-right: 2px; }
-    .product-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 11px 12px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      background: #fff;
-    }
-    .product-card.selected { border: 2px solid #06c755; background: #f1fff6; padding: 10px 11px; }
-    .product-code { font-weight: 800; font-size: 15px; }
-    .product-name { font-size: 14px; margin-top: 2px; }
-    .product-unit { font-size: 12px; color: #999; margin-top: 2px; }
-    .empty { color: #999; text-align: center; padding: 22px 8px; }
-    .quantity-row { display: flex; align-items: center; gap: 12px; }
-    .qty-button {
-      width: 46px; height: 46px; border: 0; border-radius: 12px;
-      font-size: 26px; background: #eceff3; cursor: pointer;
-    }
-    .qty-input {
-      width: 84px; height: 46px; text-align: center; font-size: 20px;
-      border: 1px solid #dcdfe4; border-radius: 10px;
-    }
-    .payment-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .payment-option input { display: none; }
-    .payment-option span {
-      display: block; text-align: center; padding: 12px 8px;
-      border: 1px solid #dcdfe4; border-radius: 10px; cursor: pointer;
-    }
-    .payment-option input:checked + span { border: 2px solid #06c755; background: #f1fff6; padding: 11px 7px; font-weight: 700; }
-    .preview { font-size: 16px; line-height: 1.6; word-break: break-all; }
-    .preview-label { color: #888; font-size: 12px; margin-bottom: 4px; }
-    .bottom-bar {
-      position: fixed; left: 0; right: 0; bottom: 0;
-      padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(255,255,255,.96); border-top: 1px solid #e5e7eb;
-    }
-    .submit-button {
-      width: 100%; border: 0; border-radius: 12px; padding: 15px;
-      font-size: 17px; font-weight: 800; background: #06c755; color: #fff;
-      cursor: pointer;
-    }
-    .submit-button:disabled { background: #b9c2bd; cursor: not-allowed; }
-    .debug-toggle { margin-top: 16px; font-size: 12px; color: #999; text-align: center; cursor: pointer; }
-    #debugLog {
-      display: none; margin-top: 10px; font-size: 11px; color: #888;
-      white-space: pre-wrap; border-top: 1px solid #ddd; padding-top: 8px; word-break: break-all;
-    }
-  </style>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#06c755">
+  <meta
+    name="description"
+    content="LINE 美髮設計師圖形化叫貨系統"
+  >
+  <title>設計師叫貨</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" defer></script>
 </head>
+
 <body>
-  <h1>📦 叫貨商品清單</h1>
-  <div class="subtitle">選商品、數量與付款狀態，再輸入客戶名稱</div>
-  <div class="status" id="status">載入中...</div>
-
-  <section class="panel">
-    <div class="panel-title">1. 選擇商品</div>
-    <input id="searchInput" class="search-input" type="search" placeholder="搜尋商品編號或名稱" autocomplete="off">
-    <div id="productList" class="product-list" style="margin-top:10px"></div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-title">2. 數量</div>
-    <div class="quantity-row">
-      <button type="button" class="qty-button" id="minusButton" aria-label="減少數量">−</button>
-      <input id="quantityInput" class="qty-input" type="number" min="1" step="1" value="1" inputmode="numeric">
-      <button type="button" class="qty-button" id="plusButton" aria-label="增加數量">＋</button>
-      <span id="unitText" style="color:#888"></span>
+  <noscript>
+    <div class="noscript">
+      此頁面需要啟用 JavaScript 才能使用。
     </div>
-  </section>
+  </noscript>
 
-  <section class="panel">
-    <div class="panel-title">3. 付款狀態</div>
-    <div class="payment-options">
-      <label class="payment-option">
-        <input type="radio" name="paymentStatus" value="已付款" checked>
-        <span>已付款</span>
-      </label>
-      <label class="payment-option">
-        <input type="radio" name="paymentStatus" value="未付款">
-        <span>未付款</span>
-      </label>
-    </div>
-  </section>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">LINE Hair Salon Ordering System</p>
+        <h1>📦 設計師叫貨</h1>
+      </div>
 
-  <section class="panel">
-    <div class="panel-title">4. 客戶名稱</div>
-    <input id="customerInput" class="customer-input" type="text" maxlength="30" placeholder="例如：小明" autocomplete="off">
-  </section>
+      <div
+        id="connectionBadge"
+        class="connection-badge"
+        aria-live="polite"
+      >
+        準備中
+      </div>
+    </header>
 
-  <section class="panel">
-    <div class="preview-label">將送到 LINE 群組</div>
-    <div id="previewText" class="preview">請先選擇商品</div>
-  </section>
+    <main class="app-main">
+      <section
+        id="statusPanel"
+        class="status-panel"
+        aria-live="polite"
+      >
+        <div class="spinner" aria-hidden="true"></div>
+        <div>
+          <strong id="statusTitle">正在準備叫貨介面</strong>
+          <p id="statusMessage">Milestone 3 尚未加入 LIFF 與商品 API 程式。</p>
+        </div>
+      </section>
 
-  <div class="debug-toggle" id="debugToggle">顯示除錯資訊</div>
-  <div id="debugLog"></div>
+      <section class="panel" aria-labelledby="searchTitle">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">STEP 1</p>
+            <h2 id="searchTitle">選擇商品</h2>
+          </div>
+          <span id="productCount" class="count-badge">0 項</span>
+        </div>
 
-  <div class="bottom-bar">
-    <button id="submitButton" class="submit-button" type="button" disabled>送出叫貨</button>
+        <label class="field-label" for="productSearch">
+          搜尋商品
+        </label>
+
+        <div class="search-box">
+          <span aria-hidden="true">🔍</span>
+          <input
+            id="productSearch"
+            type="search"
+            inputmode="search"
+            autocomplete="off"
+            placeholder="搜尋商品代號或名稱"
+            disabled
+          >
+        </div>
+
+        <div
+          id="categoryTabs"
+          class="category-tabs"
+          aria-label="商品分類"
+        >
+          <button
+            type="button"
+            class="category-tab is-active"
+            data-category="all"
+            disabled
+          >
+            全部商品
+          </button>
+        </div>
+
+        <div id="productList" class="product-list">
+          <div class="empty-state">
+            <span class="empty-state-icon" aria-hidden="true">📦</span>
+            <p>商品資料將在 Milestone 3、3 串接完成後顯示。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="orderTitle">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">STEP 2</p>
+            <h2 id="orderTitle">設定叫貨資料</h2>
+          </div>
+        </div>
+
+        <div id="selectedProduct" class="selected-product">
+          <span class="selected-product-label">目前商品</span>
+          <strong>尚未選擇商品</strong>
+          <small>請先從上方商品列表選擇。</small>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="field-label" for="quantity">數量</label>
+
+            <div class="quantity-control">
+              <button
+                id="decreaseQuantity"
+                type="button"
+                class="quantity-button"
+                aria-label="減少數量"
+                disabled
+              >
+                −
+              </button>
+
+              <input
+                id="quantity"
+                type="number"
+                min="1"
+                step="1"
+                value="1"
+                inputmode="numeric"
+                disabled
+              >
+
+              <button
+                id="increaseQuantity"
+                type="button"
+                class="quantity-button"
+                aria-label="增加數量"
+                disabled
+              >
+                ＋
+              </button>
+            </div>
+          </div>
+
+          <fieldset class="form-group payment-group" disabled>
+            <legend class="field-label">付款方式</legend>
+
+            <div class="segmented-control">
+              <label>
+                <input
+                  type="radio"
+                  name="paymentStatus"
+                  value="已付款"
+                  checked
+                >
+                <span>已付款</span>
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="paymentStatus"
+                  value="未付款"
+                >
+                <span>未付款</span>
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="paymentStatus"
+                  value="自領"
+                >
+                <span>自領</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="form-group form-group-full">
+            <label class="field-label" for="customerName">
+              客戶名稱
+            </label>
+
+            <input
+              id="customerName"
+              class="text-input"
+              type="text"
+              maxlength="40"
+              autocomplete="off"
+              placeholder="例如：小明"
+              disabled
+            >
+          </div>
+        </div>
+
+        <button
+          id="addToCartButton"
+          type="button"
+          class="button button-secondary button-block"
+          disabled
+        >
+          加入購物車
+        </button>
+      </section>
+
+      <section class="panel" aria-labelledby="cartTitle">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">STEP 3</p>
+            <h2 id="cartTitle">本次叫貨</h2>
+          </div>
+
+          <span id="cartCount" class="count-badge">0 筆</span>
+        </div>
+
+        <div id="cartList" class="cart-list">
+          <div class="empty-state">
+            <span class="empty-state-icon" aria-hidden="true">🛒</span>
+            <p>購物車目前沒有商品。</p>
+          </div>
+        </div>
+
+        <button
+          id="clearCartButton"
+          type="button"
+          class="button button-ghost button-block"
+          disabled
+        >
+          清空購物車
+        </button>
+      </section>
+
+      <section class="panel" aria-labelledby="previewTitle">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">STEP 4</p>
+            <h2 id="previewTitle">送出預覽</h2>
+          </div>
+        </div>
+
+        <pre id="messagePreview" class="message-preview">尚無叫貨資料</pre>
+
+        <button
+          id="submitAllButton"
+          type="button"
+          class="button button-primary button-block"
+          disabled
+        >
+          送出全部
+        </button>
+
+        <p class="helper-text">
+          送出後，LINE 群組會收到每筆一行的固定格式訊息。
+        </p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>v1.0.0-alpha.3</span>
+      <span>Milestone 3</span>
+    </footer>
   </div>
 
-  <script>
-    const LIFF_ID = String("<?= liffId ?>").trim();
-    const WEB_APP_URL = String("<?= webAppUrl ?>").trim();
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+    hidden
+  ></div>
 
-    let products = [];
-    let selectedProduct = null;
-    let isSubmitting = false;
+  <script src="./js/config.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/cart.js"></script>
+  <script src="./js/ui.js"></script>
+  <script src="./js/app.js"></script>
 
-    function log(message) {
-      const el = document.getElementById("debugLog");
-      const time = new Date().toLocaleTimeString();
-      const text = `[${time}] ${message}`;
-      console.log(text);
-      el.textContent += text + "\n";
-    }
-
-    function setStatus(message, isError = false) {
-      const status = document.getElementById("status");
-      status.textContent = message;
-      status.className = isError ? "status error" : "status";
-    }
-
-    function withTimeout(promise, milliseconds, label) {
-      let timeoutId;
-      const timeoutPromise = new Promise((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error(`${label} 超過 ${milliseconds / 1000} 秒仍未完成`)), milliseconds);
-      });
-      return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
-    }
-
-    function validateLiffId() {
-      if (!LIFF_ID) throw new Error("LIFF_ID 是空白");
-      if (LIFF_ID.includes("<?=") || LIFF_ID.includes("?>")) throw new Error("LIFF_ID 樣板未被解析");
-      if (!/^\d+-[A-Za-z0-9_-]+$/.test(LIFF_ID)) throw new Error(`LIFF_ID 格式錯誤：${LIFF_ID}`);
-    }
-
-    async function boot() {
-      bindEvents();
-      log("頁面腳本開始執行");
-      log(`LIFF_ID：${LIFF_ID || "(空白)"}`);
-      log(`WEB_APP_URL：${WEB_APP_URL || "(空白)"}`);
-      log(`目前網址：${window.location.href}`);
-      log(`是否在最上層視窗：${window.top === window.self}`);
-
-      try {
-        validateLiffId();
-        if (typeof liff === "undefined") throw new Error("LIFF SDK 載入失敗");
-
-        log("呼叫 liff.init()...");
-        await withTimeout(liff.init({ liffId: LIFF_ID }), 12000, "liff.init()");
-        log("✅ liff.init() 成功");
-        log(`isInClient：${liff.isInClient()}`);
-        log(`isLoggedIn：${liff.isLoggedIn()}`);
-
-        if (!liff.isLoggedIn()) {
-          setStatus("正在登入 LINE...");
-          liff.login({ redirectUri: window.location.href });
-          return;
-        }
-
-        setStatus("正在載入商品...");
-        loadProducts();
-      } catch (error) {
-        const message = error && error.message ? error.message : String(error);
-        log(`❌ 初始化失敗：${message}`);
-        setStatus(`初始化失敗：${message}`, true);
-      }
-    }
-
-    function bindEvents() {
-      document.getElementById("searchInput").addEventListener("input", renderFilteredProducts);
-      document.getElementById("minusButton").addEventListener("click", () => changeQuantity(-1));
-      document.getElementById("plusButton").addEventListener("click", () => changeQuantity(1));
-      document.getElementById("quantityInput").addEventListener("input", normalizeQuantityAndRefresh);
-      document.getElementById("customerInput").addEventListener("input", updatePreview);
-      document.querySelectorAll('input[name="paymentStatus"]').forEach((el) => el.addEventListener("change", updatePreview));
-      document.getElementById("submitButton").addEventListener("click", submitOrder);
-      document.getElementById("debugToggle").addEventListener("click", () => {
-        const logEl = document.getElementById("debugLog");
-        const isHidden = getComputedStyle(logEl).display === "none";
-        logEl.style.display = isHidden ? "block" : "none";
-        document.getElementById("debugToggle").textContent = isHidden ? "隱藏除錯資訊" : "顯示除錯資訊";
-      });
-    }
-
-    function loadProducts() {
-      if (typeof google === "undefined" || !google.script || !google.script.run) {
-        setStatus("google.script.run 無法使用", true);
-        return;
-      }
-
-      const timeoutId = setTimeout(() => setStatus("商品資料讀取逾時，請稍後再試", true), 10000);
-      google.script.run
-        .withSuccessHandler((result) => {
-          clearTimeout(timeoutId);
-          products = Array.isArray(result) ? result : [];
-          products.sort((a, b) => Number(a.sort || 0) - Number(b.sort || 0));
-          setStatus(`共 ${products.length} 項商品`);
-          renderFilteredProducts();
-        })
-        .withFailureHandler((error) => {
-          clearTimeout(timeoutId);
-          const message = error && error.message ? error.message : String(error);
-          log(`❌ 商品載入失敗：${message}`);
-          setStatus(`商品清單載入失敗：${message}`, true);
-        })
-        .liffGetProducts();
-    }
-
-    function renderFilteredProducts() {
-      const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
-      const filtered = products.filter((product) => {
-        const text = `${product.productId || ""} ${product.name || ""}`.toLowerCase();
-        return !keyword || text.includes(keyword);
-      });
-
-      const container = document.getElementById("productList");
-      container.innerHTML = "";
-
-      if (!filtered.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty";
-        empty.textContent = "找不到符合的商品";
-        container.appendChild(empty);
-        return;
-      }
-
-      filtered.forEach((product) => {
-        const card = document.createElement("div");
-        card.className = "product-card" + (selectedProduct && selectedProduct.productId === product.productId ? " selected" : "");
-        card.addEventListener("click", () => selectProduct(product));
-
-        const code = document.createElement("div");
-        code.className = "product-code";
-        code.textContent = product.productId || "";
-
-        const name = document.createElement("div");
-        name.className = "product-name";
-        name.textContent = product.name || "未命名商品";
-
-        const unit = document.createElement("div");
-        unit.className = "product-unit";
-        unit.textContent = product.unit ? `單位：${product.unit}` : "";
-
-        card.appendChild(code);
-        card.appendChild(name);
-        card.appendChild(unit);
-        container.appendChild(card);
-      });
-    }
-
-    function selectProduct(product) {
-      selectedProduct = product;
-      document.getElementById("unitText").textContent = product.unit || "";
-      renderFilteredProducts();
-      updatePreview();
-    }
-
-    function changeQuantity(delta) {
-      const input = document.getElementById("quantityInput");
-      const current = Math.max(1, parseInt(input.value, 10) || 1);
-      input.value = Math.max(1, current + delta);
-      updatePreview();
-    }
-
-    function normalizeQuantityAndRefresh() {
-      const input = document.getElementById("quantityInput");
-      if (input.value !== "") input.value = Math.max(1, parseInt(input.value, 10) || 1);
-      updatePreview();
-    }
-
-    function getOrderText() {
-      if (!selectedProduct) return "";
-      const quantity = Math.max(1, parseInt(document.getElementById("quantityInput").value, 10) || 1);
-      const payment = document.querySelector('input[name="paymentStatus"]:checked').value;
-      const customer = document.getElementById("customerInput").value.trim();
-      if (!customer) return "";
-      return `${selectedProduct.productId} ${quantity} ${payment} ${customer}`;
-    }
-
-    function updatePreview() {
-      const preview = document.getElementById("previewText");
-      const button = document.getElementById("submitButton");
-      const orderText = getOrderText();
-
-      if (!selectedProduct) preview.textContent = "請先選擇商品";
-      else if (!document.getElementById("customerInput").value.trim()) preview.textContent = "請輸入客戶名稱";
-      else preview.textContent = orderText;
-
-      button.disabled = !orderText || isSubmitting;
-    }
-
-    async function submitOrder() {
-      if (isSubmitting) return;
-      const orderText = getOrderText();
-      if (!orderText) {
-        alert("請完成商品、數量、付款狀態與客戶名稱");
-        return;
-      }
-      if (!liff.isInClient()) {
-        alert("請從 LINE 群組內開啟叫貨介面，才能將資料送回群組");
-        return;
-      }
-
-      try {
-        isSubmitting = true;
-        updatePreview();
-        setStatus("正在送出叫貨...");
-        await withTimeout(liff.sendMessages([{ type: "text", text: orderText }]), 10000, "送出訊息");
-        log(`✅ 已送出：${orderText}`);
-        setStatus("叫貨已送出");
-        alert("叫貨已送出到 LINE 群組");
-        liff.closeWindow();
-      } catch (error) {
-        const message = error && error.message ? error.message : String(error);
-        log(`❌ 送出失敗：${message}`);
-        setStatus(`送出失敗：${message}`, true);
-        alert(`送出失敗：${message}`);
-      } finally {
-        isSubmitting = false;
-        updatePreview();
-      }
-    }
-
-    boot();
-  </script>
 </body>
 </html>
