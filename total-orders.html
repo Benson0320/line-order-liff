@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#06c755">
-  <meta name="description" content="查看目前全部叫貨狀況">
-  <title>總叫貨</title>
+  <meta name="description" content="查看目前叫貨狀況">
+  <title>叫貨狀況</title>
   <link rel="stylesheet" href="./css/style.css">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js" defer></script>
 </head>
 <body>
   <noscript><div class="noscript">此頁面需要啟用 JavaScript 才能使用。</div></noscript>
@@ -15,7 +16,7 @@
     <header class="app-header">
       <div>
         <p class="eyebrow">LINE Hair Salon Ordering System</p>
-        <h1>📋 總叫貨</h1>
+        <h1 id="pageTitle">📋 我的總叫貨</h1>
       </div>
       <div id="connectionBadge" class="connection-badge" aria-live="polite">讀取中</div>
     </header>
@@ -23,7 +24,7 @@
     <main class="app-main">
       <nav class="page-tabs" aria-label="叫貨功能">
         <a class="page-tab" href="./index.html">叫貨</a>
-        <a class="page-tab is-active" href="./total-orders.html">總叫貨</a>
+        <a class="page-tab is-active" href="./total-orders.html">叫貨狀況</a>
       </nav>
 
       <section id="statusPanel" class="status-panel" aria-live="polite">
@@ -44,7 +45,7 @@
         <div class="section-heading">
           <div>
             <p class="section-kicker">CURRENT ORDERS</p>
-            <h2 id="currentOrdersTitle">目前叫貨狀況</h2>
+            <h2 id="currentOrdersTitle">我的目前叫貨</h2>
           </div>
           <button id="refreshButton" type="button" class="icon-button">重新整理</button>
         </div>

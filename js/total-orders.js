@@ -4,6 +4,7 @@
   const api = global.ProductApi;
   const elements = {
     badge: document.getElementById("connectionBadge"),
+    pageTitle: document.getElementById("pageTitle"),
     statusPanel: document.getElementById("statusPanel"),
     statusTitle: document.getElementById("statusTitle"),
     statusMessage: document.getElementById("statusMessage"),
@@ -73,6 +74,36 @@
     return groups.size;
   }
 
+  async function getVerifiedAccessToken() {
+    if (typeof global.liff === "undefined") {
+      throw new Error("LIFF SDK 載入失敗，請檢查網路連線。");
+    }
+
+    await global.liff.init({ liffId: global.APP_CONFIG.LIFF_ID });
+
+    if (!global.liff.isLoggedIn()) {
+      global.liff.login({ redirectUri: window.location.href });
+      return null;
+    }
+
+    const accessToken = global.liff.getAccessToken();
+    if (!accessToken) {
+      throw new Error("無法取得 LINE 登入驗證，請重新開啟頁面。");
+    }
+
+    return accessToken;
+  }
+
+  function applyScope(scope) {
+    const isAdminView = scope === "all";
+    elements.pageTitle.textContent = isAdminView
+      ? "📋 總叫貨"
+      : "📋 我的總叫貨";
+    document.getElementById("currentOrdersTitle").textContent = isAdminView
+      ? "全部目前叫貨"
+      : "我的目前叫貨";
+  }
+
   async function loadCurrentOrders() {
     elements.refreshButton.disabled = true;
     elements.badge.textContent = "讀取中";
@@ -82,13 +113,19 @@
     elements.statusMessage.textContent = "請稍候，正在取得最新資料。";
 
     try {
-      const payload = await api.getCurrentOrders();
+      const accessToken = await getVerifiedAccessToken();
+      if (!accessToken) return;
+
+      const payload = await api.getCurrentOrders(accessToken);
+      applyScope(payload.scope);
       const designerCount = renderOrders(payload.orders);
       elements.designerCount.textContent = String(designerCount);
       elements.orderCount.textContent = String(payload.orders.length);
       elements.totalQuantity.textContent = String(payload.totalQuantity || 0);
       elements.updatedAt.textContent = `更新時間：${new Date(payload.updatedAt).toLocaleString("zh-TW")}`;
-      elements.badge.textContent = "已更新";
+      elements.badge.textContent = payload.scope === "all"
+        ? "管理員"
+        : "個人資料";
       elements.badge.dataset.state = "success";
       elements.statusPanel.hidden = true;
     } catch (error) {

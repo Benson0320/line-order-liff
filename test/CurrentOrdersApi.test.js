@@ -23,13 +23,16 @@ const window = {
 };
 
 const document = {
+  lastScriptUrl: "",
   createElement: () => ({ remove() {} }),
   head: {
     appendChild(script) {
+      document.lastScriptUrl = script.src;
       const url = new URL(script.src);
       const callback = url.searchParams.get("callback");
       window[callback]({
         success: true,
+        scope: "own",
         orders: [{ designerName: "小美", quantity: 5 }],
         totalQuantity: 5,
         updatedAt: "2026-08-01T00:00:00.000Z"
@@ -46,9 +49,13 @@ vm.runInContext(
 );
 
 (async () => {
-  const payload = await window.ProductApi.getCurrentOrders();
+  const payload = await window.ProductApi.getCurrentOrders("verified-token");
   assert.strictEqual(payload.orders.length, 1);
   assert.strictEqual(payload.totalQuantity, 5);
+  assert.strictEqual(
+    new URL(document.lastScriptUrl).searchParams.get("accessToken"),
+    "verified-token"
+  );
   console.log("CurrentOrdersApi.test.js PASS");
 })().catch((error) => {
   console.error(error);

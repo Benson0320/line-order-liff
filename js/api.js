@@ -124,9 +124,14 @@
     return requestJsonp(config.API_ACTIONS.HEALTH);
   }
 
-  async function getCurrentOrders() {
+  async function getCurrentOrders(accessToken) {
+    if (!accessToken) {
+      throw new Error("缺少 LINE 登入驗證，請重新開啟頁面。");
+    }
+
     const payload = await requestJsonp(
-      config.API_ACTIONS.CURRENT_ORDERS
+      config.API_ACTIONS.CURRENT_ORDERS,
+      { accessToken }
     );
 
     if (payload?.success === false) {

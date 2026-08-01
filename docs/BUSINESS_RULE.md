@@ -108,6 +108,6 @@ V1 不加入：
 - 餐點
 - 庫存扣帳
 
-## BR-014 總叫貨唯讀規則
+## BR-014 叫貨狀況權限規則
 
-「總叫貨」只讀目前 ORDERS，不修改 Sheet；API 不回傳 LINE User ID。
+一般設計師只可查看自己 LINE User ID 對應的目前 ORDERS；管理員可查看全部。身分必須由後端向 LINE 驗證，前端不可自行宣告管理員；API 不回傳 LINE User ID，也不修改 Sheet。
