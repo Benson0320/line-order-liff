@@ -252,3 +252,118 @@ Given：
 Expected：
 
 `liff.sendMessages()` 只呼叫一次，內容為一則多行文字訊息。
+
+
+## TC-021 健康檢查 API
+
+Request：
+
+```text
+?action=health
+```
+
+Expected：
+
+- `success = true`
+- version 為 `1.0.0-alpha.3`
+- 包含 timestamp
+
+## TC-022 正式商品 API
+
+Request：
+
+```text
+?action=liffGetProducts
+```
+
+Expected：
+
+- `success = true`
+- `products` 為陣列
+- 每筆包含 code、name、unit、category
+
+## TC-023 舊版 action 相容
+
+Request：
+
+```text
+?action=liffProducts
+```
+
+Expected：
+
+與 `liffGetProducts` 回傳相同商品格式。
+
+## TC-024 MenuService 優先
+
+Given：
+
+專案存在 `MenuService.getDisplayProducts()`。
+
+Expected：
+
+API 不直接讀取工作表，使用既有 MenuService。
+
+## TC-025 無 MenuService 備援
+
+Given：
+
+專案沒有 MenuService，但商品工作表存在。
+
+Expected：
+
+API 直接讀取商品工作表。
+
+## TC-026 無分類欄位
+
+Given：
+
+商品工作表沒有分類欄。
+
+Expected：
+
+每筆 category 為「其他」。
+
+## TC-027 停用商品
+
+Given：
+
+商品啟用欄為 false、否、停用或 0。
+
+Expected：
+
+商品不出現在 API。
+
+## TC-028 重複商品代號
+
+Given：
+
+兩筆商品代號皆為 A02。
+
+Expected：
+
+API 最後只回傳一筆 A02，後一筆覆蓋前一筆。
+
+## TC-029 商品代號自然排序
+
+Given：
+
+```text
+A10, A2, A01, B1
+```
+
+Expected：
+
+```text
+A01, A2, A10, B1
+```
+
+## TC-030 doGet 唯一性
+
+Given：
+
+Apps Script 專案已存在其他 `doGet(e)`。
+
+Expected：
+
+合併路由後只保留一個全域 `doGet(e)`。

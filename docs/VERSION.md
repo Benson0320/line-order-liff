@@ -3,38 +3,39 @@
 ## Current Version
 
 ```text
-1.0.0-alpha.2
+1.0.0-alpha.3
 ```
 
 ## Milestone
 
 ```text
-Milestone 2
+Milestone 3
 ```
 
 ## Status
 
 已完成：
 
-- 文件規格
-- HTML
-- CSS
-- LIFF 初始化
-- 商品 API 前端模組
+- 完整文件
+- LIFF 前端
 - 商品搜尋
-- 商品排序
-- 分類預留
 - 多商品購物車
-- 覆蓋邏輯
-- 預覽
-- LINE 多筆送出
+- 唯一鍵覆蓋邏輯
+- LINE 訊息預覽與送出
+- Apps Script 商品 JSON API
+- 健康檢查 API
+- MenuService 相容
+- Google Sheet 直接讀取備援
+- 商品欄位名稱相容
+- doGet 合併說明
 
 尚未完成：
 
-- Apps Script 商品 API
-- Google Sheet 欄位解析
-- 健康檢查 API
-- 正式整合測試
+- 合併至正式 Apps Script 專案
+- Apps Script Web App 重新部署
+- GitHub Pages API 實機測試
+- LINE 群組完整整合測試
+- 原 Bot 寫入 Google Sheet 驗證
 
 ## Version Plan
 

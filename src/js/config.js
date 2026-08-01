@@ -1,5 +1,5 @@
 window.APP_CONFIG = Object.freeze({
-  VERSION: "1.0.0-alpha.2",
+  VERSION: "1.0.0-alpha.3",
 
   // 請在正式部署前確認此 LIFF ID。
   LIFF_ID: "2010924806-TX9pddUE",

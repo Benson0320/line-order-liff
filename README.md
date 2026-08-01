@@ -98,8 +98,8 @@ line-hair-ordering-system/
 目前為：
 
 ```text
-v1.0.0-alpha.2
-Milestone 2
+v1.0.0-alpha.3
+Milestone 3
 ```
 
 已完成：
@@ -110,6 +110,6 @@ Milestone 2
 
 尚未完成：
 
-- Apps Script 商品 API
-- Google Sheet 欄位解析
-- 整合測試
+- 正式 Apps Script 專案合併
+- Web App 新版本部署
+- GitHub Pages 與 LINE 群組整合測試

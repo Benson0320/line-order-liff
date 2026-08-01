@@ -2,45 +2,53 @@
 
 所有重要變更記錄於此。
 
+## [1.0.0-alpha.3] - 2026-08-01
+
+### Added
+
+- 新增 `AppsScript/Config.gs`。
+- 新增 `AppsScript/Utils.gs`。
+- 新增 `AppsScript/Sheet.gs`。
+- 新增 `AppsScript/Api.gs`。
+- 新增 `AppsScript/Liff.gs`。
+- 新增 `AppsScript/README-MERGE.md`。
+- 新增 `action=liffGetProducts` 商品 JSON API。
+- 保留舊版 `action=liffProducts` 相容。
+- 新增 `action=health` 健康檢查 API。
+- 優先沿用既有 `MenuService.getDisplayProducts()`。
+- 無 MenuService 時，自動從 Google Sheet 讀取商品。
+- 支援多種商品欄位名稱。
+- 支援啟用、分類、單位與排序欄位。
+- 缺少分類時預設為「其他」。
+- 商品依商品代號自然排序。
+- 重複商品代號採後值覆蓋。
+- 新增 doGet 合併指引，避免破壞既有 Bot。
+
+### Compatibility
+
+- 不修改 `doPost(e)`。
+- 不修改 LINE Webhook。
+- 不修改統計開始、統計結束、重新開放。
+- 不修改 Excel 匯出。
+- 不修改既有訂單解析格式。
+
+### Pending
+
+- Apps Script 實際專案合併。
+- Web App 新版本部署。
+- GitHub Pages 實機讀取商品。
+- LINE 群組整合測試。
+
 ## [1.0.0-alpha.2] - 2026-08-01
 
 ### Added
 
-- 新增 `src/js/config.js`。
-- 新增 `src/js/utils.js`。
-- 新增 `src/js/api.js`。
-- 新增 `src/js/cart.js`。
-- 新增 `src/js/ui.js`。
-- 新增 `src/js/app.js`。
-- 完成 LIFF 初始化流程。
-- 完成商品 API 呼叫與格式標準化。
-- 完成商品代號自然排序。
-- 完成商品搜尋。
-- 完成分類切換預留。
-- 完成多商品購物車。
-- 完成「商品代號 + 客戶名稱」唯一鍵。
-- 完成相同商品同客戶覆蓋數量與付款方式。
-- 完成購物車數量調整。
-- 完成購物車付款方式調整。
-- 完成刪除與全部清空。
-- 完成 LINE 固定文字預覽。
-- 完成 `liff.sendMessages()` 多筆送出。
-- 完成一般瀏覽器送出防呆。
-- 完成送出防重複。
-- 完成 localStorage 購物車保存。
-- 更新 `src/index.html` 與 `src/css/style.css`。
-
-### Pending
-
-- Apps Script 商品 JSON API。
-- 健康檢查 API。
-- 與既有 `doGet()` 合併。
-- LINE 群組整合測試。
+- 完成 LIFF 前端。
+- 完成商品搜尋與多商品購物車。
+- 完成覆蓋邏輯與 LINE 多筆送出。
 
 ## [1.0.0-alpha.1] - 2026-08-01
 
 ### Added
 
-- 建立 Milestone 1 專案骨架。
-- 新增專案文件。
-- 新增前端 HTML 與 CSS 骨架。
+- 建立專案骨架與完整規格文件。
