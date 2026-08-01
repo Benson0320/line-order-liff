@@ -49,7 +49,7 @@
       if (
         !productCode ||
         !productName ||
-        !customerName ||
+        !utils.validateCustomerName(customerName).valid ||
         !Number.isInteger(quantity) ||
         quantity < 1 ||
         quantity > config.MAX_QUANTITY ||
