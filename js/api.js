@@ -124,8 +124,27 @@
     return requestJsonp(config.API_ACTIONS.HEALTH);
   }
 
+  async function getCurrentOrders() {
+    const payload = await requestJsonp(
+      config.API_ACTIONS.CURRENT_ORDERS
+    );
+
+    if (payload?.success === false) {
+      throw new Error(
+        payload.message || "目前叫貨資料讀取失敗。"
+      );
+    }
+
+    if (!Array.isArray(payload?.orders)) {
+      throw new Error("目前叫貨 API 回傳格式錯誤。");
+    }
+
+    return payload;
+  }
+
   global.ProductApi = Object.freeze({
     getProducts,
+    getCurrentOrders,
     healthCheck,
     buildApiUrl,
     normalizeProducts

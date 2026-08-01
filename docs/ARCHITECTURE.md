@@ -72,6 +72,7 @@ GitHub Pages 前端負責：
 - 分類欄位預留
 - 錯誤回傳
 - CORS 相容的公開 Web App 輸出
+- 提供目前叫貨唯讀 JSON，排除 LINE User ID
 
 ## 4. LINE Bot 責任
 
@@ -115,6 +116,16 @@ liff.sendMessages()
 LINE 群組
   ↓
 原 Bot
+```
+
+### 總叫貨讀取
+
+```text
+總叫貨頁面
+  ↓ GET ?action=liffGetCurrentOrders
+Apps Script 唯讀 ORDERS
+  ↓
+依設計師分組顯示目前叫貨
 ```
 
 ## 6. 部署
