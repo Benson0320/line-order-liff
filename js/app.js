@@ -272,9 +272,10 @@
       this.applyProductFilters();
       this.updateAddButtonMode();
 
-      this.ui.elements.customerName.focus({
+      this.ui.elements.quantity.focus({
         preventScroll: false
       });
+      this.ui.elements.quantity.select();
     }
 
     getFormData() {
