@@ -3,13 +3,13 @@
 ## Current Version
 
 ```text
-1.0.0-alpha.1
+1.0.0-alpha.2
 ```
 
 ## Milestone
 
 ```text
-Milestone 1
+Milestone 2
 ```
 
 ## Status
@@ -17,18 +17,24 @@ Milestone 1
 已完成：
 
 - 文件規格
-- HTML 骨架
-- CSS 基礎樣式
-
-未完成：
-
-- 前端 JavaScript
+- HTML
+- CSS
 - LIFF 初始化
-- Apps Script API
-- 商品讀取
-- 購物車邏輯
-- LINE 送出
-- 整合測試
+- 商品 API 前端模組
+- 商品搜尋
+- 商品排序
+- 分類預留
+- 多商品購物車
+- 覆蓋邏輯
+- 預覽
+- LINE 多筆送出
+
+尚未完成：
+
+- Apps Script 商品 API
+- Google Sheet 欄位解析
+- 健康檢查 API
+- 正式整合測試
 
 ## Version Plan
 
@@ -38,7 +44,7 @@ Milestone 1
 
 ### 1.0.0-alpha.2
 
-前端 JavaScript 與購物車。
+LIFF 前端與購物車。
 
 ### 1.0.0-alpha.3
 
@@ -46,7 +52,7 @@ Apps Script 商品 API。
 
 ### 1.0.0-beta.1
 
-LIFF 與 LINE 整合測試。
+LINE 與 Google Sheet 整合測試。
 
 ### 1.0.0
 

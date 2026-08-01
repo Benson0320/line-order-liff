@@ -2,40 +2,32 @@
 
 ## Milestone 1
 
-- [x] AI_CONTEXT.md
-- [x] README.md
-- [x] PRODUCT_SPEC.md
-- [x] BUSINESS_RULE.md
-- [x] ARCHITECTURE.md
-- [x] API.md
-- [x] DATABASE.md
-- [x] COMMAND.md
-- [x] UI_SPEC.md
-- [x] INSTALL.md
-- [x] CHANGELOG.md
-- [x] VERSION.md
-- [x] TODO.md
-- [x] DECISION_LOG.md
-- [x] TEST_CASE.md
-- [x] src/index.html
-- [x] src/css/style.css
+- [x] 完整專案文件
+- [x] HTML 骨架
+- [x] CSS 骨架
 
 ## Milestone 2
 
-- [ ] config.js
-- [ ] utils.js
-- [ ] api.js
-- [ ] cart.js
-- [ ] ui.js
-- [ ] app.js
-- [ ] LIFF 初始化
-- [ ] 商品搜尋
-- [ ] 商品排序
-- [ ] 分類預留
-- [ ] 多商品購物車
-- [ ] 覆蓋邏輯
-- [ ] 預覽
-- [ ] sendMessages
+- [x] config.js
+- [x] utils.js
+- [x] api.js
+- [x] cart.js
+- [x] ui.js
+- [x] app.js
+- [x] LIFF 初始化
+- [x] 商品搜尋
+- [x] 商品排序
+- [x] 分類預留
+- [x] 多商品購物車
+- [x] 唯一鍵覆蓋邏輯
+- [x] 購物車數量調整
+- [x] 購物車付款方式調整
+- [x] 刪除單筆
+- [x] 全部清空
+- [x] LINE 文字預覽
+- [x] liff.sendMessages
+- [x] 防重複送出
+- [x] localStorage 保存
 
 ## Milestone 3
 
@@ -46,12 +38,13 @@
 - [ ] 商品 JSON API
 - [ ] 健康檢查 API
 - [ ] 既有 doGet 路由合併
+- [ ] Google Sheet 欄位相容
 
 ## Milestone 4
 
-- [ ] GitHub Pages 測試
+- [ ] GitHub Pages 實機測試
 - [ ] LINE Developers Endpoint
 - [ ] LIFF Scope
-- [ ] LINE 群組測試
-- [ ] Google Sheet 相容測試
+- [ ] LINE 群組送出測試
 - [ ] 原 Bot 解析測試
+- [ ] Google Sheet 寫入測試

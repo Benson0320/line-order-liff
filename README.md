@@ -98,8 +98,8 @@ line-hair-ordering-system/
 目前為：
 
 ```text
-v1.0.0-alpha.1
-Milestone 1
+v1.0.0-alpha.2
+Milestone 2
 ```
 
 已完成：
@@ -110,8 +110,6 @@ Milestone 1
 
 尚未完成：
 
-- LIFF 初始化程式
-- 商品 API
-- 購物車 JavaScript
-- Apps Script API
+- Apps Script 商品 API
+- Google Sheet 欄位解析
 - 整合測試
