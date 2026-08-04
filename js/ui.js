@@ -104,15 +104,53 @@ setControlsEnabled(enabled) {
         });
 
         button.addEventListener("click", () => {
-          onSelect(
-            category === activeCategory ? "" : category
-          );
+          const isActive =
+            button.classList.contains("is-active");
+
+          onSelect(isActive ? "" : category);
         });
 
         container.appendChild(button);
       });
 
       this.updateCategoryScrollButtons();
+    }
+
+    updateActiveCategory(activeCategory) {
+      const container = this.elements.categoryTabs;
+
+      container
+        .querySelectorAll(".category-tab")
+        .forEach((button) => {
+          button.classList.toggle(
+            "is-active",
+            button.dataset.category === activeCategory
+          );
+        });
+    }
+
+    updateSelectedProductHighlight(previousCode, selectedCode) {
+      const container = this.elements.productList;
+
+      if (previousCode) {
+        const previousButton = container.querySelector(
+          `[data-product-code="${CSS.escape(previousCode)}"]`
+        );
+
+        if (previousButton) {
+          previousButton.classList.remove("is-selected");
+        }
+      }
+
+      if (selectedCode) {
+        const selectedButton = container.querySelector(
+          `[data-product-code="${CSS.escape(selectedCode)}"]`
+        );
+
+        if (selectedButton) {
+          selectedButton.classList.add("is-selected");
+        }
+      }
     }
 
     scrollCategories(direction) {

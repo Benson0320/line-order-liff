@@ -3,6 +3,7 @@
 
   const api = global.ProductApi;
   const config = global.APP_CONFIG;
+  const utils = global.AppUtils;
   let accessTokenPromise = null;
   let hasCachedPayload = false;
   const elements = {
@@ -95,7 +96,11 @@
       throw new Error("LIFF SDK 載入失敗，請檢查網路連線。");
     }
 
-    await global.liff.init({ liffId: global.APP_CONFIG.LIFF_ID });
+    await utils.withTimeout(
+      global.liff.init({ liffId: global.APP_CONFIG.LIFF_ID }),
+      config.REQUEST_TIMEOUT_MS,
+      "LIFF 初始化"
+    );
 
     if (!global.liff.isLoggedIn()) {
       global.liff.login({ redirectUri: window.location.href });

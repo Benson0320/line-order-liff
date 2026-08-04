@@ -9,7 +9,15 @@
     constructor() {
       this.ui = new global.AppUI();
       this.cart = new global.CartStore(
-        config.STORAGE_KEYS.CART
+        config.STORAGE_KEYS.CART,
+        {
+          onPersistError: () => {
+            this.ui.showToast(
+              "購物車暫存失敗，離開頁面後可能會遺失，請盡快送出。",
+              "error"
+            );
+          }
+        }
       );
 
       this.products = [];
@@ -39,8 +47,14 @@
       );
 
       try {
-        await this.initializeLiff();
-        await this.loadProducts();
+        const [liffResult] = await Promise.all([
+          this.initializeLiff(),
+          this.loadProducts()
+        ]);
+
+        if (liffResult.redirecting) {
+          return;
+        }
 
         this.ui.setControlsEnabled(true);
         this.ui.setStatus(
@@ -198,18 +212,21 @@
           redirectUri: window.location.href
         });
 
-        return;
+        return { redirecting: true };
       }
 
-      try {
-        this.profile = await utils.withTimeout(
-          global.liff.getProfile(),
-          8000,
-          "取得 LINE 使用者資料"
-        );
-      } catch (error) {
-        console.warn("取得 LINE 使用者資料失敗：", error);
-      }
+      // 使用者顯示名稱目前沒有任何畫面用到，
+      // 不等待它，避免拖慢初始化。
+      global.liff
+        .getProfile()
+        .then((profile) => {
+          this.profile = profile;
+        })
+        .catch((error) => {
+          console.warn("取得 LINE 使用者資料失敗：", error);
+        });
+
+      return { redirecting: false };
     }
 
     async loadProducts() {
@@ -239,7 +256,7 @@
         (category) => {
           this.activeCategory = category;
           this.applyProductFilters();
-          this.renderCategories();
+          this.ui.updateActiveCategory(category);
         }
       );
     }
@@ -309,14 +326,18 @@
     }
 
     selectProduct(product) {
+      const previousCode = this.selectedProduct?.code || "";
       this.selectedProduct = product;
 
       this.ui.renderSelectedProduct(product);
+      this.ui.updateSelectedProductHighlight(
+        previousCode,
+        product.code
+      );
       this.ui.elements.quantity.value = String(
         config.DEFAULT_QUANTITY
       );
 
-      this.applyProductFilters();
       this.updateAddButtonMode();
 
       this.ui.elements.quantity.focus({

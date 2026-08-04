@@ -5,10 +5,11 @@
   const utils = global.AppUtils;
 
   class CartStore {
-    constructor(storageKey) {
+    constructor(storageKey, options = {}) {
       this.storageKey = storageKey;
       this.items = [];
       this.listeners = new Set();
+      this.onPersistError = options.onPersistError || (() => {});
       this.restore();
     }
 
@@ -204,12 +205,14 @@
     }
 
     persist() {
-      if (this.items.length === 0) {
-        utils.storageRemove(this.storageKey);
-        return;
-      }
+      const saved =
+        this.items.length === 0
+          ? utils.storageRemove(this.storageKey)
+          : utils.storageSet(this.storageKey, this.items);
 
-      utils.storageSet(this.storageKey, this.items);
+      if (!saved) {
+        this.onPersistError();
+      }
     }
 
     subscribe(listener) {
