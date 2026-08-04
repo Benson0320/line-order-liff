@@ -14,8 +14,9 @@
 
       this.products = [];
       this.filteredProducts = [];
+      this.categories = [];
       this.selectedProduct = null;
-      this.activeCategory = "全部商品";
+      this.activeCategory = "";
       this.searchKeyword = "";
       this.profile = null;
       this.isInClient = false;
@@ -202,12 +203,12 @@
       );
 
       this.products = await api.getProducts();
-      this.applyProductFilters();
       this.renderCategories();
+      this.applyProductFilters();
     }
 
     renderCategories() {
-      const categories = [
+      this.categories = [
         ...new Set(
           this.products
             .map((product) => product.category)
@@ -216,12 +217,11 @@
       ].sort(utils.naturalCompare);
 
       this.ui.renderCategories(
-        categories,
+        this.categories,
         this.activeCategory,
         (category) => {
           this.activeCategory = category;
           this.applyProductFilters();
-          this.renderCategories();
         }
       );
     }
@@ -231,11 +231,15 @@
         this.searchKeyword
       );
 
-      const isUnfilteredDefaultView =
-        this.activeCategory === "全部商品" &&
-        !keyword &&
+      const needsExplicitFilter =
+        this.categories.length > 0 &&
         this.products.length >
           config.PRODUCT_LIST_AUTO_SHOW_LIMIT;
+
+      const isUnfilteredDefaultView =
+        needsExplicitFilter &&
+        !this.activeCategory &&
+        !keyword;
 
       if (isUnfilteredDefaultView) {
         this.filteredProducts = [];
@@ -258,7 +262,7 @@
       this.filteredProducts = this.products.filter(
         (product) => {
           const matchCategory =
-            this.activeCategory === "全部商品" ||
+            !this.activeCategory ||
             product.category === this.activeCategory;
 
           if (!matchCategory) {

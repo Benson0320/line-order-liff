@@ -83,20 +83,18 @@
           >
         </div>
 
-        <div
+        <label class="field-label" for="categoryTabs">
+          商品分類
+        </label>
+
+        <select
           id="categoryTabs"
-          class="category-tabs"
+          class="category-select"
           aria-label="商品分類"
+          disabled
         >
-          <button
-            type="button"
-            class="category-tab is-active"
-            data-category="all"
-            disabled
-          >
-            全部商品
-          </button>
-        </div>
+          <option value="">請選擇分類</option>
+        </select>
 
         <div id="productList" class="product-list">
           <div class="empty-state">
