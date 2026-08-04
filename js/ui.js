@@ -84,31 +84,29 @@ setControlsEnabled(enabled) {
 }
 
     renderCategories(categories, activeCategory, onSelect) {
-      const select = this.elements.categoryTabs;
-      select.replaceChildren();
-
-      const placeholder = createElement("option", {
-        text:
-          categories.length === 0
-            ? "無分類"
-            : "請選擇分類",
-        attrs: { value: "" }
-      });
-      placeholder.selected = !activeCategory;
-      select.appendChild(placeholder);
+      const container = this.elements.categoryTabs;
+      container.replaceChildren();
 
       categories.forEach((category) => {
-        const option = createElement("option", {
+        const button = createElement("button", {
+          className:
+            "category-tab" +
+            (category === activeCategory ? " is-active" : ""),
           text: category,
-          attrs: { value: category }
+          attrs: {
+            type: "button",
+            "data-category": category
+          }
         });
-        option.selected = category === activeCategory;
-        select.appendChild(option);
-      });
 
-      select.onchange = () => {
-        onSelect(select.value);
-      };
+        button.addEventListener("click", () => {
+          onSelect(
+            category === activeCategory ? "" : category
+          );
+        });
+
+        container.appendChild(button);
+      });
     }
 
     renderProducts(products, selectedCode, onSelect, options = {}) {

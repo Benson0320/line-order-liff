@@ -222,6 +222,7 @@
         (category) => {
           this.activeCategory = category;
           this.applyProductFilters();
+          this.renderCategories();
         }
       );
     }

@@ -317,16 +317,38 @@ fieldset:disabled {
   background: transparent;
 }
 
-.category-select {
-  width: 100%;
-  min-height: 44px;
+.category-tabs {
+  display: flex;
+  gap: 8px;
   margin: 14px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.category-tab {
+  flex: 0 0 auto;
+  min-height: 38px;
   padding: 8px 13px;
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  color: var(--color-text);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
   background: var(--color-surface);
-  font-size: 15px;
+  scroll-snap-align: start;
+}
+
+.category-tab.is-active {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+  background: var(--color-primary-soft);
 }
 
 .product-list,
