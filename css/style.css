@@ -35,6 +35,7 @@
 
 html {
   min-height: 100%;
+  overflow-x: hidden;
   background: var(--color-background);
 }
 
@@ -42,6 +43,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   color: var(--color-text);
   background:
     radial-gradient(
@@ -85,6 +87,7 @@ fieldset:disabled {
 .app-shell {
   width: min(100%, var(--content-width));
   min-height: 100vh;
+  overflow-x: hidden;
   margin: 0 auto;
   padding:
     calc(18px + var(--safe-top))
