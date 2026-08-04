@@ -109,18 +109,20 @@ setControlsEnabled(enabled) {
       });
     }
 
-    renderProducts(products, selectedCode, onSelect) {
+    renderProducts(products, selectedCode, onSelect, options = {}) {
       const container = this.elements.productList;
       container.replaceChildren();
 
       this.elements.productCount.textContent =
-        `${products.length} 項`;
+        options.totalCount != null
+          ? `${products.length} / ${options.totalCount} 項`
+          : `${products.length} 項`;
 
       if (products.length === 0) {
         container.appendChild(
           this.createEmptyState(
-            "🔎",
-            "找不到符合條件的商品。"
+            options.emptyIcon || "🔎",
+            options.emptyMessage || "找不到符合條件的商品。"
           )
         );
         return;

@@ -231,6 +231,30 @@
         this.searchKeyword
       );
 
+      const isUnfilteredDefaultView =
+        this.activeCategory === "全部商品" &&
+        !keyword &&
+        this.products.length >
+          config.PRODUCT_LIST_AUTO_SHOW_LIMIT;
+
+      if (isUnfilteredDefaultView) {
+        this.filteredProducts = [];
+
+        this.ui.renderProducts(
+          [],
+          this.selectedProduct?.code || "",
+          (product) => this.selectProduct(product),
+          {
+            totalCount: this.products.length,
+            emptyIcon: "🔍",
+            emptyMessage:
+              `共 ${this.products.length} 項商品，` +
+              "請選擇上方分類，或輸入關鍵字搜尋。"
+          }
+        );
+        return;
+      }
+
       this.filteredProducts = this.products.filter(
         (product) => {
           const matchCategory =
@@ -257,7 +281,8 @@
       this.ui.renderProducts(
         this.filteredProducts,
         this.selectedProduct?.code || "",
-        (product) => this.selectProduct(product)
+        (product) => this.selectProduct(product),
+        { totalCount: this.products.length }
       );
     }
 
