@@ -32,6 +32,10 @@
         statusMessage: document.getElementById("statusMessage"),
         productSearch: document.getElementById("productSearch"),
         categoryTabs: document.getElementById("categoryTabs"),
+        categoryScrollLeft:
+          document.getElementById("categoryScrollLeft"),
+        categoryScrollRight:
+          document.getElementById("categoryScrollRight"),
         productList: document.getElementById("productList"),
         productCount: document.getElementById("productCount"),
         selectedProduct: document.getElementById("selectedProduct"),
@@ -107,6 +111,36 @@ setControlsEnabled(enabled) {
 
         container.appendChild(button);
       });
+
+      this.updateCategoryScrollButtons();
+    }
+
+    scrollCategories(direction) {
+      const container = this.elements.categoryTabs;
+
+      container.scrollBy({
+        left: direction * container.clientWidth * 0.8,
+        behavior: "smooth"
+      });
+    }
+
+    updateCategoryScrollButtons() {
+      const container = this.elements.categoryTabs;
+      const canScroll =
+        container.scrollWidth > container.clientWidth + 1;
+
+      this.elements.categoryScrollLeft.hidden = !canScroll;
+      this.elements.categoryScrollRight.hidden = !canScroll;
+
+      if (!canScroll) {
+        return;
+      }
+
+      this.elements.categoryScrollLeft.disabled =
+        container.scrollLeft <= 0;
+      this.elements.categoryScrollRight.disabled =
+        container.scrollLeft + container.clientWidth
+          >= container.scrollWidth - 1;
     }
 
     renderProducts(products, selectedCode, onSelect, options = {}) {

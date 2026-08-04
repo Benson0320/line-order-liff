@@ -76,6 +76,23 @@
         }, 120)
       );
 
+      elements.categoryScrollLeft.addEventListener(
+        "click",
+        () => this.ui.scrollCategories(-1)
+      );
+
+      elements.categoryScrollRight.addEventListener(
+        "click",
+        () => this.ui.scrollCategories(1)
+      );
+
+      elements.categoryTabs.addEventListener(
+        "scroll",
+        utils.debounce(() => {
+          this.ui.updateCategoryScrollButtons();
+        }, 50)
+      );
+
       elements.decreaseQuantity.addEventListener(
         "click",
         () => {
