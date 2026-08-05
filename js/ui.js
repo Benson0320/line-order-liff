@@ -87,11 +87,15 @@ setControlsEnabled(enabled) {
     this.elements.customerName.disabled = !enabled;
     this.elements.addToCartButton.disabled = !enabled;
 
-    this.elements.vendorPicker
-      .querySelectorAll(".vendor-chip")
-      .forEach((chip) => {
-        chip.disabled = !enabled;
-      });
+    // 舊版 index.html 仍在快取時取不到容器，
+    // 此時略過即可，不得讓整個初始化中斷
+    if (this.elements.vendorPicker) {
+      this.elements.vendorPicker
+        .querySelectorAll(".vendor-chip")
+        .forEach((chip) => {
+          chip.disabled = !enabled;
+        });
+    }
 }
 
     /**
@@ -100,6 +104,11 @@ setControlsEnabled(enabled) {
      */
     renderVendorPicker(vendorNames, onSelect) {
       const container = this.elements.vendorPicker;
+
+      if (!container) {
+        return;
+      }
+
       container.replaceChildren();
 
       vendorNames.forEach((vendorName) => {
@@ -126,6 +135,10 @@ setControlsEnabled(enabled) {
      * 手動輸入時也會同步，比對忽略大小寫與前後空白。
      */
     syncVendorPicker(customerName) {
+      if (!this.elements.vendorPicker) {
+        return;
+      }
+
       const current =
         utils.normalizeText(customerName).toLowerCase();
 
