@@ -105,7 +105,9 @@ setControlsEnabled(enabled) {
     renderVendorPicker(vendorNames, onSelect) {
       const container = this.elements.vendorPicker;
 
-      if (!container) {
+      // 容器或清單缺一不可；舊版檔案殘留在快取時兩者都可能取不到，
+      // 此時略過快選即可，不得讓整個初始化中斷
+      if (!container || !Array.isArray(vendorNames)) {
         return;
       }
 

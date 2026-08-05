@@ -67,7 +67,7 @@ const context = {
   document: {
     createElement: (tagName) => createElementStub(tagName),
     getElementById: (id) => elementsById[id] || createElementStub("div"),
-    querySelector: () => null,
+    querySelector: () => createElementStub("fieldset"),
     querySelectorAll: () => []
   }
 };
@@ -145,6 +145,49 @@ ui.renderVendorPicker(config.VENDOR_CUSTOMER_NAMES, () => {});
 assert.ok(
   vendorPicker.children.every((chip) => chip.disabled),
   "客戶名稱欄位停用時，廠商按鈕必須一併停用"
+);
+
+// 快取到舊版 index.html／config.js 時不得中斷初始化。
+// setControlsEnabled 位於 app.js 的 try 區塊內，
+// 這裡拋錯會讓畫面停在「系統初始化失敗」而無法叫貨。
+const missingContext = {
+  window: {},
+  CSS: {escape: (value) => value},
+  document: {
+    createElement: (tagName) => createElementStub(tagName),
+    // 模擬舊版 index.html：沒有 vendorPicker 元素
+    getElementById: (id) => (
+      id === "vendorPicker" ? null : createElementStub("input")
+    ),
+    querySelector: () => createElementStub("fieldset"),
+    querySelectorAll: () => []
+  }
+};
+missingContext.global = missingContext;
+vm.createContext(missingContext);
+vm.runInContext(readSource("js", "config.js"), missingContext);
+vm.runInContext(readSource("js", "utils.js"), missingContext);
+vm.runInContext(readSource("js", "ui.js"), missingContext);
+
+const degradedUi = new missingContext.window.AppUI();
+
+assert.doesNotThrow(
+  () => degradedUi.renderVendorPicker(["宣尼"], () => {}),
+  "缺少容器時 renderVendorPicker 不得拋錯"
+);
+assert.doesNotThrow(
+  () => degradedUi.syncVendorPicker("宣尼"),
+  "缺少容器時 syncVendorPicker 不得拋錯"
+);
+assert.doesNotThrow(
+  () => degradedUi.setControlsEnabled(true),
+  "缺少容器時 setControlsEnabled 不得拋錯"
+);
+
+// 快取到舊版 config.js（沒有廠商清單）時同樣不得中斷
+assert.doesNotThrow(
+  () => ui.renderVendorPicker(undefined, () => {}),
+  "廠商清單缺漏時 renderVendorPicker 不得拋錯"
 );
 
 console.log("VendorPicker.test.js passed");
