@@ -19,8 +19,11 @@ window.APP_CONFIG = Object.freeze({
   ]),
 
   // 廠商客戶名稱快選。
-  // 與 Apps Script 端 Constants.gs 的 ORDER_VENDOR_CUSTOMER_NAMES 一致，
-  // 兩邊需同步維護：報表會依這些名稱各自輸出獨立工作表。
+  //
+  // 同步維護：Apps Script 端 Line_bot_V1_FAYE 的 src/Constants.gs
+  // 也有一份 ORDER_VENDOR_CUSTOMER_NAMES，報表會依那份名單各自輸出
+  // 獨立工作表。增減廠商時兩邊必須一起修改，否則這裡選得到的廠商
+  // 在報表不會獨立成表，或報表多出這裡選不到的廠商。
   VENDOR_CUSTOMER_NAMES: Object.freeze([
     "宣尼",
     "覺亞",
