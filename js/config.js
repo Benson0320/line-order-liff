@@ -18,6 +18,22 @@ window.APP_CONFIG = Object.freeze({
     "自領"
   ]),
 
+  // 廠商客戶名稱快選。
+  // 與 Apps Script 端 Constants.gs 的 ORDER_VENDOR_CUSTOMER_NAMES 一致，
+  // 兩邊需同步維護：報表會依這些名稱各自輸出獨立工作表。
+  VENDOR_CUSTOMER_NAMES: Object.freeze([
+    "宣尼",
+    "覺亞",
+    "醫美",
+    "麥偉",
+    "耐克斯",
+    "施華蔻",
+    "伊日",
+    "川越",
+    "I-Charming",
+    "BIO"
+  ]),
+
   DEFAULT_CATEGORY: "其他",
   PRODUCT_LIST_AUTO_SHOW_LIMIT: 30,
   DEFAULT_QUANTITY: 1,

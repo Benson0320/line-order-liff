@@ -44,6 +44,7 @@
         increaseQuantity: document.getElementById("increaseQuantity"),
         paymentFieldset: document.querySelector(".payment-group"),
         customerName: document.getElementById("customerName"),
+        vendorPicker: document.getElementById("vendorPicker"),
         addToCartButton: document.getElementById("addToCartButton"),
         cartList: document.getElementById("cartList"),
         cartCount: document.getElementById("cartCount"),
@@ -85,7 +86,61 @@ setControlsEnabled(enabled) {
     this.elements.paymentFieldset.disabled = !enabled;
     this.elements.customerName.disabled = !enabled;
     this.elements.addToCartButton.disabled = !enabled;
+
+    this.elements.vendorPicker
+      .querySelectorAll(".vendor-chip")
+      .forEach((chip) => {
+        chip.disabled = !enabled;
+      });
 }
+
+    /**
+     * 廠商客戶名稱快選。
+     * 點選後直接帶入客戶名稱欄位，仍可手動輸入或修改。
+     */
+    renderVendorPicker(vendorNames, onSelect) {
+      const container = this.elements.vendorPicker;
+      container.replaceChildren();
+
+      vendorNames.forEach((vendorName) => {
+        const button = createElement("button", {
+          className: "vendor-chip",
+          text: vendorName,
+          attrs: {
+            type: "button",
+            "data-vendor": vendorName
+          }
+        });
+
+        button.disabled = this.elements.customerName.disabled;
+        button.addEventListener("click", () => {
+          onSelect(vendorName);
+        });
+
+        container.appendChild(button);
+      });
+    }
+
+    /**
+     * 依目前客戶名稱標示對應的廠商按鈕，
+     * 手動輸入時也會同步，比對忽略大小寫與前後空白。
+     */
+    syncVendorPicker(customerName) {
+      const current =
+        utils.normalizeText(customerName).toLowerCase();
+
+      this.elements.vendorPicker
+        .querySelectorAll(".vendor-chip")
+        .forEach((chip) => {
+          const vendorName =
+            String(chip.dataset.vendor || "").toLowerCase();
+
+          chip.classList.toggle(
+            "is-active",
+            Boolean(current) && vendorName === current
+          );
+        });
+    }
 
     renderCategories(categories, activeCategory, onSelect) {
       const container = this.elements.categoryTabs;
@@ -292,6 +347,7 @@ setControlsEnabled(enabled) {
 
       this.elements.quantity.value = String(item.quantity);
       this.elements.customerName.value = item.customerName;
+      this.syncVendorPicker(item.customerName);
 
       const paymentInput = document.querySelector(
         `input[name="paymentStatus"][value="${CSS.escape(
@@ -307,6 +363,7 @@ setControlsEnabled(enabled) {
     resetOrderForm(defaultQuantity) {
       this.elements.quantity.value = String(defaultQuantity);
       this.elements.customerName.value = "";
+      this.syncVendorPicker("");
 
       const defaultPayment = document.querySelector(
         'input[name="paymentStatus"][value="已付款"]'

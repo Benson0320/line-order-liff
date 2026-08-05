@@ -394,6 +394,37 @@ fieldset:disabled {
   background: var(--color-primary-soft);
 }
 
+/* 廠商客戶名稱快選：可直接點選，仍保留手動輸入 */
+.vendor-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.vendor-chip {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  background: var(--color-surface);
+  font-size: 0.86rem;
+}
+
+.vendor-chip.is-active {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+  background: var(--color-primary-soft);
+  font-weight: 700;
+}
+
+.vendor-chip:disabled {
+  opacity: 0.45;
+}
+
 .product-list,
 .cart-list {
   display: grid;

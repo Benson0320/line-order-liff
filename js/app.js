@@ -32,6 +32,7 @@
     }
 
     async init() {
+      this.renderVendorPicker();
       this.bindEvents();
       this.cart.subscribe((items) => {
         this.renderCart(items);
@@ -149,6 +150,9 @@
       elements.customerName.addEventListener(
         "input",
         () => {
+          this.ui.syncVendorPicker(
+            elements.customerName.value
+          );
           this.updateAddButtonMode();
         }
       );
@@ -239,6 +243,27 @@
       this.products = await api.getProducts();
       this.renderCategories();
       this.applyProductFilters();
+    }
+
+    /**
+     * 廠商客戶名稱快選；點選後帶入欄位並比照手動輸入更新狀態。
+     * 再點一次同一個廠商可清空，避免誤選後只能手動刪字。
+     */
+    renderVendorPicker() {
+      this.ui.renderVendorPicker(
+        config.VENDOR_CUSTOMER_NAMES,
+        (vendorName) => {
+          const input = this.ui.elements.customerName;
+          const isSameVendor =
+            utils.normalizeText(input.value).toLowerCase()
+            === vendorName.toLowerCase();
+
+          input.value = isSameVendor ? "" : vendorName;
+
+          this.ui.syncVendorPicker(input.value);
+          this.updateAddButtonMode();
+        }
+      );
     }
 
     renderCategories() {
