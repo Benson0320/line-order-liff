@@ -174,9 +174,40 @@
     return payload;
   }
 
+  async function deleteOrder(
+    accessToken,
+    designerName,
+    productCode,
+    customerName
+  ) {
+    if (!accessToken) {
+      throw new Error("缺少 LINE 登入驗證，請重新開啟頁面。");
+    }
+
+    const payload = await requestJsonp(
+      config.API_ACTIONS.DELETE_ORDER,
+      {
+        accessToken,
+        designerName,
+        productCode,
+        customerName
+      },
+      config.PRODUCTS_TIMEOUT_MS
+    );
+
+    if (payload?.success === false) {
+      throw new Error(
+        payload.message || "刪除叫貨失敗。"
+      );
+    }
+
+    return payload;
+  }
+
   global.ProductApi = Object.freeze({
     getProducts,
     getCurrentOrders,
+    deleteOrder,
     healthCheck,
     buildApiUrl,
     normalizeProducts

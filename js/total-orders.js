@@ -57,17 +57,33 @@
 
       designerOrders.forEach((order) => {
         const card = createElement("article", "current-order-card", "");
+        const header = createElement("div", "current-order-card-header", "");
         const title = createElement(
           "strong",
           "current-order-title",
           `${order.productCode} ${order.productName}`
         );
+        const deleteButton = createElement(
+          "button",
+          "icon-button danger current-order-delete",
+          "刪除"
+        );
+        deleteButton.type = "button";
+        deleteButton.setAttribute(
+          "aria-label",
+          `刪除 ${order.designerName} 的 ${order.productCode}｜${order.customerName || "未填客戶"}`
+        );
+        deleteButton.addEventListener("click", () => {
+          handleDeleteOrder(order, deleteButton);
+        });
+        header.append(title, deleteButton);
+
         const detail = createElement(
           "p",
           "current-order-detail",
           `${order.quantity} 份｜${order.paymentStatus || "未設定"}｜${order.customerName || "未填客戶"}`
         );
-        card.append(title, detail);
+        card.append(header, detail);
         section.appendChild(card);
       });
 
@@ -76,6 +92,36 @@
 
     elements.list.replaceChildren(fragment);
     return groups.size;
+  }
+
+  async function handleDeleteOrder(order, buttonElement) {
+    const confirmed = global.confirm(
+      `確定要刪除「${order.designerName}」的「${order.productCode} ${order.productName}」`
+      + `（客戶：${order.customerName || "未填客戶"}）嗎？`
+    );
+
+    if (!confirmed) return;
+
+    buttonElement.disabled = true;
+    buttonElement.textContent = "刪除中…";
+
+    try {
+      const accessToken = await getVerifiedAccessToken();
+      if (!accessToken) return;
+
+      await api.deleteOrder(
+        accessToken,
+        order.designerName,
+        order.productCode,
+        order.customerName
+      );
+
+      await loadCurrentOrders();
+    } catch (error) {
+      global.alert(error.message || String(error));
+      buttonElement.disabled = false;
+      buttonElement.textContent = "刪除";
+    }
   }
 
   async function getVerifiedAccessToken() {
