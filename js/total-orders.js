@@ -98,7 +98,7 @@
 
     await utils.withTimeout(
       global.liff.init({ liffId: global.APP_CONFIG.LIFF_ID }),
-      config.LIFF_INIT_TIMEOUT_MS,
+      config.REQUEST_TIMEOUT_MS,
       "LIFF 初始化"
     );
 
