@@ -51,6 +51,13 @@
       };
     }
 
+    if (/[0-9０-９]/.test(customerName)) {
+      return {
+        valid: false,
+        message: "客戶名稱不可包含數字。"
+      };
+    }
+
     return {
       valid: true,
       value: customerName
