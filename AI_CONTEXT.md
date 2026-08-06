@@ -265,16 +265,35 @@ try 區塊內（例如 `setControlsEnabled()`），畫面會停在
 2026-08-06 客戶名稱開放數字那次修改後，使用者回報「LIFF 又加載
 失敗」，但當下只跑了 `test/*.test.js`（全過）就直接 push，沒有實際
 跑過 `init()`。事後用 `scripts/verify-liff-init.js`（見下方）驗證，
-init() 本身完全正常、沒有任何錯誤；使用者確認實際狀況是「載入太久」，
-不是初始化失敗——研判是剛 push 完，GitHub Pages CDN 或裝置端快取
-還沒跟上（`index.html` 的 `Cache-Control: max-age=600` 是 GitHub
-Pages 系統層級設定，無法用 8.1.1 的 meta 標籤完全蓋掉）。這流程
-暴露出兩個落差：一是「單元測試全過≠頁面能正常載入」，二是「剛部署
-完的幾分鐘內測試，本來就可能因為快取還沒生效而變慢或短暫看到舊版」。
+init() 本身完全正常、沒有任何錯誤；使用者一開始回報「載入太久」，
+讓人一度誤判是 GitHub Pages CDN／裝置端快取還沒跟上（`index.html`
+的 `Cache-Control: max-age=600` 是系統層級設定，無法用 8.1.1 的
+meta 標籤完全蓋掉），但後來附上的截圖顯示真正原因是
+`liff.init()`（LINE 官方 SDK）本身逾時：畫面顯示
+「LIFF 初始化超過 12 秒仍未完成」，也就是 `app.js` 的
+`initializeLiff()` 裡 `utils.withTimeout(liff.init(...), 12000, ...)`
+真的等超過 12 秒。`liff.init()` 是呼叫 LINE 官方伺服器，在網路較差
+時本來就可能需要更久，`scripts/verify-liff-init.js` 會 stub 掉
+`liff.init()`，測不出這種真實網路延遲。
+
+修正方式：把 LIFF 初始化的逾時從共用的 `REQUEST_TIMEOUT_MS`
+（12000ms）拆成獨立的 `LIFF_INIT_TIMEOUT_MS`（20000ms），
+`index.html` 與 `total-orders.html` 的登入流程都改用這個獨立設定，
+不影響其他 API 呼叫的逾時。**沒有**對 `liff.init()` 做重試——
+LIFF SDK 官方文件沒有明確保證 `liff.init()` 重複呼叫時的行為，
+與其冒著重複初始化出現未知副作用的風險，先用拉長逾時處理。
+
+這流程暴露出三個落差：一是「單元測試全過≠頁面能正常載入」；
+二是「剛部署完的幾分鐘內測試，仍可能因為快取還沒生效而變慢或
+短暫看到舊版」（這個可能性依然存在，只是這次不是真正原因）；
+三是「`verify-liff-init.js` 驗證不出真實網路延遲造成的逾時，
+只能抓程式邏輯錯誤」。使用者回報異常時，**先要截圖或錯誤文字**，
+不要只憑一句「加載失敗」就猜原因，狀態文字（如「LIFF 初始化超過
+12 秒仍未完成」）通常已經直接指出問題在哪一步。
 
 **剛 push／redeploy 完的幾分鐘內**如果要現場測試，先預期可能要多等
 一下、或看到暫時的舊版行為，不要一測到異常就當成程式碼壞掉；先確認
-是不是單純還沒等到快取過期。
+是不是單純還沒等到快取過期，但也不要因此忽略真正的錯誤訊息。
 
 **規則：修改 `js/`、`index.html` 或 `total-orders.html` 後，
 push 之前必須執行 `npm run verify`（第一次要先 `npm install`），
