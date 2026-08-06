@@ -1,0 +1,11 @@
+{
+  "name": "line-order-liff",
+  "private": true,
+  "scripts": {
+    "test": "for f in test/*.test.js; do node \"$f\" || exit 1; done",
+    "verify": "node scripts/verify-liff-init.js"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.0"
+  }
+}
