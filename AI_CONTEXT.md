@@ -241,6 +241,19 @@ try 區塊內（例如 `setControlsEnabled()`），畫面會停在
 並在 `renderVendorPicker`、`syncVendorPicker`、`setControlsEnabled`
 加上元素不存在時略過的防護。
 
+**2026-08-07 補充：`?v=` 版本字串不保證能立即繞過 CDN 快取。**
+新增叫貨狀況刪除按鈕那次，push 後就算在網址額外加上從未出現過的隨機
+參數（例如 `&x=<random>`），GitHub Pages 的 CDN 仍然回傳舊版
+`total-orders.js`（且回應標頭 `Age` 顯示是「新鮮」回應，不是單純
+瀏覽器本機快取）。這代表 CDN 那層的快取鍵可能不是嚴格照完整網址
+（含所有查詢字串）區分，或是 push 當下 GitHub Pages origin 本身還沒
+建置完成、CDN 抓到的就是舊內容並把它快取住。**唯一確定有效的做法是
+等待 `index.html`／`total-orders.html` 本身的 `Cache-Control:
+max-age=600`（10 分鐘）真的到期**，用改版本字串或加隨機參數都不能
+保證繞過。驗證剛 push 的改動時，先用 `git show HEAD:<file>` 確認
+commit 內容正確，再耐心等滿 10 分鐘後才下「還沒生效」或「壞掉」的
+結論，不要頻繁重測。
+
 ### 8.1.2 新增 DOM 元素時必須容許該元素不存在
 
 承上，使用者裝置的快取無法控制。凡是在 `init()` 流程中操作的新元素，
