@@ -111,21 +111,9 @@
   }
 
   async function getProducts() {
-    let payload;
-
-    for (let attempt = 0; attempt < 2; attempt += 1) {
-      try {
-        payload = await requestJsonp(
-          config.API_ACTIONS.PRODUCTS,
-          {},
-          config.PRODUCTS_TIMEOUT_MS
-        );
-        break;
-      } catch (error) {
-        if (attempt === 1) throw error;
-        await new Promise((resolve) => global.setTimeout(resolve, 500));
-      }
-    }
+    const payload = await requestJsonp(
+      config.API_ACTIONS.PRODUCTS
+    );
 
     if (payload?.success === false) {
       throw new Error(
