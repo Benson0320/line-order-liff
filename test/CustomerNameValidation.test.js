@@ -12,9 +12,12 @@ vm.runInContext(
 
 const validate = context.window.AppUtils.validateCustomerName;
 
-assert.strictEqual(validate("網美 10 大學生").valid, false);
-assert.strictEqual(validate("網美１０大學生").valid, false);
+assert.strictEqual(validate("網美 10 大學生").valid, true);
+assert.strictEqual(validate("網美 10 大學生").value, "網美 10 大學生");
+assert.strictEqual(validate("網美１０大學生").valid, true);
 assert.strictEqual(validate("網美大學生").valid, true);
 assert.strictEqual(validate("網美大學生").value, "網美大學生");
+assert.strictEqual(validate("").valid, false);
+assert.strictEqual(validate("   ").valid, false);
 
 console.log("CustomerNameValidation.test.js passed");
