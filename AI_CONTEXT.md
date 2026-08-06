@@ -254,6 +254,40 @@ try 區塊內（例如 `setControlsEnabled()`），畫面會停在
 `ORDER_VENDOR_CUSTOMER_NAMES` 是同一份名單，增減廠商必須兩邊一起改。
 只改前端會讓該廠商在 Excel 報表不會獨立成表；只改後端則前端選不到。
 
+### 8.1.4 修改後必須實際驗證過一次 init()，不能只跑單元測試
+
+`test/*.test.js` 都只測試個別函式（`validateCustomerName`、購物車邏輯
+等），沒有任何一個測試會真的載入 `index.html` 並執行 `app.js` 的
+`init()` 流程。8.1.1 那次故障（`?v=` 版本字串沒同步）如果當時有跑過
+一次真正的 init()，會立刻在 `renderVendorPicker` 操作不存在的
+`#vendorPicker` 時噴錯，而不用等到正式環境才發現。
+
+2026-08-06 客戶名稱開放數字那次修改後，使用者回報「LIFF 又加載
+失敗」，但當下只跑了 `test/*.test.js`（全過）就直接 push，沒有實際
+跑過 `init()`。事後用 `scripts/verify-liff-init.js`（見下方）驗證，
+init() 本身完全正常、沒有任何錯誤；使用者確認實際狀況是「載入太久」，
+不是初始化失敗——研判是剛 push 完，GitHub Pages CDN 或裝置端快取
+還沒跟上（`index.html` 的 `Cache-Control: max-age=600` 是 GitHub
+Pages 系統層級設定，無法用 8.1.1 的 meta 標籤完全蓋掉）。這流程
+暴露出兩個落差：一是「單元測試全過≠頁面能正常載入」，二是「剛部署
+完的幾分鐘內測試，本來就可能因為快取還沒生效而變慢或短暫看到舊版」。
+
+**剛 push／redeploy 完的幾分鐘內**如果要現場測試，先預期可能要多等
+一下、或看到暫時的舊版行為，不要一測到異常就當成程式碼壞掉；先確認
+是不是單純還沒等到快取過期。
+
+**規則：修改 `js/`、`index.html` 或 `total-orders.html` 後，
+push 之前必須執行 `npm run verify`（第一次要先 `npm install`），
+確認 init() 能跑到「叫貨介面已就緒」且沒有 window error 事件，
+不能只憑 `test/*.test.js` 全過就視為驗證完成。**
+
+`scripts/verify-liff-init.js` 用 jsdom 載入真正的 `index.html`，依序
+執行真正的 `config.js`／`utils.js`／`cart.js`／`ui.js`／`app.js`，
+只 stub 掉 `liff` 與 `ProductApi`（無法在 Node 裡連上真的 LINE 與
+真的網路）。通過不保證 LINE 內建瀏覽器一定正常（模擬不出真實裝置
+快取與 LIFF 環境），但能抓到會讓整個初始化掛掉的明顯錯誤，屬於
+push 前的最低限度驗證，不是驗證完成的保證。
+
 ## 9. 文件同步規則
 
 修改核心規則時，必須同步更新：
@@ -279,3 +313,8 @@ try 區塊內（例如 `setControlsEnabled()`），畫面會停在
 7. 說明修改檔案與測試方式。
 8. 改動 `js/` 或 `css/` 後，更新兩個 HTML 的 `?v=` 版本字串。
 9. 新發生的正式環境故障，修好後要在第 8.1 節補上規則。
+10. 改動 `js/`、`index.html` 或 `total-orders.html` 後，push 前先跑
+    `npm run verify`（見 8.1.4），確認 init() 正常且無 window error，
+    不能只憑 `test/*.test.js` 全過就視為驗證完成。
+11. push／redeploy 完的幾分鐘內若協助現場測試，先提醒可能還在等
+    快取過期，不要一看到異常就直接當成程式碼壞掉去改。
