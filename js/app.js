@@ -194,7 +194,7 @@
         global.liff.init({
           liffId: config.LIFF_ID
         }),
-        config.REQUEST_TIMEOUT_MS,
+        config.LIFF_INIT_TIMEOUT_MS,
         "LIFF 初始化"
       );
 

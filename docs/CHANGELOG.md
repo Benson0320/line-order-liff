@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+- LIFF 初始化逾時改用獨立的 `LIFF_INIT_TIMEOUT_MS`（20 秒），不再與其他 API 共用 12 秒逾時，減少網路較慢時的初始化失敗
+- 新增 `scripts/verify-liff-init.js`（`npm run verify`），push 前可實際跑一次 init() 流程而非只靠單元測試
 - 客戶名稱開放輸入半形與全形數字，僅維持必填驗證（取代下方「禁止數字」規則，見決策 D-014）
 - 目前叫貨快取改為依 LIFF access token 雜湊隔離，完成 LINE 驗證前不顯示舊帳號資料
 - 加速叫貨狀況讀取，加入同分頁短期快取、LIFF 初始化重用、一次自動重試與失敗保留舊資料
