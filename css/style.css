@@ -231,26 +231,10 @@ fieldset:disabled {
   background: var(--color-surface-subtle);
 }
 
-.current-order-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  min-width: 0;
-}
-
 .current-order-title {
   display: block;
-  min-width: 0;
   overflow-wrap: break-word;
   word-break: break-word;
-}
-
-.current-order-delete {
-  flex: 0 0 auto;
-  min-height: 30px;
-  padding: 5px 10px;
-  font-size: 0.8rem;
 }
 
 .current-order-detail {

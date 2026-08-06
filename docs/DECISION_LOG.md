@@ -119,20 +119,3 @@ V1 不提供備註欄位，保持介面簡單並維持 Bot 格式相容。
 `商品代號 數量 付款狀態 客戶名稱`（空白分隔、客戶名稱固定為最後一段
 到字串結尾），客戶名稱中的數字不會與商品代號後方緊接的數量欄位混淆，
 D-010 當初的疑慮不成立；LIFF 與 Bot 後端使用相同規則。
-
-## D-015 叫貨狀況頁面新增單筆刪除（部分取代 D-011 的唯讀原則）
-
-D-011 原本刻意把「叫貨狀況」／「總叫貨」做成唯讀頁面。現在新增單筆
-刪除功能，但權限規則沿用既有的查看權限分流（D-012）：一般設計師只
-能刪自己的叫貨，管理員可刪任何人的。
-
-後端新增 `action=liffDeleteOrder`（Apps Script `Liff.gs` /
-`deleteOrderForLiff_`），一律先用 `verifyLiffAccessToken_` 驗證身分；
-一般使用者的可刪範圍**一律以伺服器驗證過的 userId 限定**，不信任
-前端傳入的 `designerName`，避免冒用他人姓名刪除他人叫貨。刪除比對
-key 為（權限範圍內的擁有者）＋ `productCode` ＋ `customerName`；找到
-即用既有的 `runWithOrderLock` 鎖定刪除該列，並呼叫既有的
-`refreshItemTotal()`／`refreshLatestOrderList()`，與文字指令
-「減少」的刪除路徑共用同一套鎖定與刷新機制。統計結束後（
-`ORDER_STATUS` 非 OPEN）禁止刪除，理由與 8.1.6／既有「統計結束禁止
-修改」規則一致。

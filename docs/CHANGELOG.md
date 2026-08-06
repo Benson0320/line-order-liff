@@ -4,7 +4,6 @@
 
 ## [Unreleased]
 
-- 叫貨狀況頁面新增單筆刪除按鈕；一般設計師只能刪自己的叫貨，管理員可刪任何人的（見決策 D-015）
 - 移除 Apps Script 端 `ProductRepository` 的 `CacheService` 商品快取——實測會讓「資料 API」偶發逾時更頻繁（連續使用幾次後就開始失敗），弊大於利，見 `AI_CONTEXT.md` 8.1.6
 - 商品 API（`getProducts`）逾時改用獨立的 `PRODUCTS_TIMEOUT_MS`（20 秒）並加一次自動重試，比照 `getCurrentOrders` 既有慣例
 - LIFF 初始化逾時改用獨立的 `LIFF_INIT_TIMEOUT_MS`（20 秒），不再與其他 API 共用 12 秒逾時，減少網路較慢時的初始化失敗

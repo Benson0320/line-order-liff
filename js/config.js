@@ -9,7 +9,6 @@ window.APP_CONFIG = Object.freeze({
   API_ACTIONS: Object.freeze({
     PRODUCTS: "liffGetProducts",
     CURRENT_ORDERS: "liffGetCurrentOrders",
-    DELETE_ORDER: "liffDeleteOrder",
     HEALTH: "health"
   }),
 
