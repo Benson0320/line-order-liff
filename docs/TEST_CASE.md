@@ -413,3 +413,15 @@ Expected：
 ## TC-037 統計結束後禁止刪除
 
 `ORDER_STATUS` 非 OPEN（已執行「統計結束」）時，刪除請求回傳 `ORDER_CLOSED`，不得刪除任何叫貨列。
+
+## TC-038 廠商快選按鈕權限（一般設計師）
+
+一般設計師（非管理員、非組長）開啟叫貨頁面，`liffCheckVendorAccess` 回傳 `canUseVendorShortcuts: false`，畫面上不顯示廠商客戶名稱快選按鈕，仍可手動輸入客戶名稱正常叫貨。
+
+## TC-039 廠商快選按鈕權限（組長／管理員）
+
+`SUPERVISOR_USER_IDS` 或 `ADMIN_USER_IDS` 內的使用者開啟叫貨頁面，`liffCheckVendorAccess` 回傳 `canUseVendorShortcuts: true`，畫面上正常顯示並可點選廠商快選按鈕。
+
+## TC-040 廠商快選權限檢查失敗不影響叫貨
+
+`liffCheckVendorAccess` 逾時、回傳失敗或未登入時，快選按鈕維持不顯示（fail closed），但不拋出錯誤、不阻擋商品載入與叫貨送出等其餘功能。

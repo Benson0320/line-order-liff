@@ -32,7 +32,6 @@
     }
 
     async init() {
-      this.renderVendorPicker();
       this.bindEvents();
       this.cart.subscribe((items) => {
         this.renderCart(items);
@@ -63,6 +62,10 @@
           `已載入 ${this.products.length} 項商品。`,
           "success"
         );
+
+        // 不 await：權限檢查不得拖慢或阻擋其餘畫面就緒流程，
+        // 快選按鈕確認有權限後才補上，失敗時保持不顯示。
+        this.setupVendorPicker();
 
         window.setTimeout(() => {
           this.ui.setStatusHidden(true);
@@ -243,6 +246,26 @@
       this.products = await api.getProducts();
       this.renderCategories();
       this.applyProductFilters();
+    }
+
+    /**
+     * 廠商快選按鈕僅限管理員與組長使用，一般設計師看不到也選不到。
+     * 需等 LIFF 登入完成才有 accessToken，因此在畫面就緒後才檢查，
+     * 且不 await（見 init()），檢查失敗或非授權身分一律維持不顯示。
+     */
+    async setupVendorPicker() {
+      try {
+        const accessToken = global.liff.getAccessToken();
+        const canUseVendorShortcuts =
+          await api.checkVendorAccess(accessToken);
+
+        if (canUseVendorShortcuts) {
+          this.renderVendorPicker();
+        }
+      } catch (error) {
+        // 靜默失敗：權限檢查失敗時保持不顯示快選按鈕，
+        // 不得影響其餘叫貨功能。
+      }
     }
 
     /**

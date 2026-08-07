@@ -204,10 +204,34 @@
     return payload;
   }
 
+  /**
+   * 廠商客戶名稱快選按鈕權限檢查；任何失敗（缺少 token、逾時、
+   * 後端拒絕）都回傳 false 而非拋出例外，讓呼叫端維持預設隱藏，
+   * 不影響其餘頁面初始化流程。
+   */
+  async function checkVendorAccess(accessToken) {
+    if (!accessToken) {
+      return false;
+    }
+
+    try {
+      const payload = await requestJsonp(
+        config.API_ACTIONS.VENDOR_ACCESS,
+        { accessToken },
+        config.PRODUCTS_TIMEOUT_MS
+      );
+
+      return payload?.canUseVendorShortcuts === true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   global.ProductApi = Object.freeze({
     getProducts,
     getCurrentOrders,
     deleteOrder,
+    checkVendorAccess,
     healthCheck,
     buildApiUrl,
     normalizeProducts

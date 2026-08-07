@@ -10,6 +10,7 @@ window.APP_CONFIG = Object.freeze({
     PRODUCTS: "liffGetProducts",
     CURRENT_ORDERS: "liffGetCurrentOrders",
     DELETE_ORDER: "liffDeleteOrder",
+    VENDOR_ACCESS: "liffCheckVendorAccess",
     HEALTH: "health"
   }),
 
@@ -25,6 +26,10 @@ window.APP_CONFIG = Object.freeze({
   // 也有一份 ORDER_VENDOR_CUSTOMER_NAMES，報表會依那份名單各自輸出
   // 獨立工作表。增減廠商時兩邊必須一起修改，否則這裡選得到的廠商
   // 在報表不會獨立成表，或報表多出這裡選不到的廠商。
+  //
+  // 這份清單本身不分權限，但畫面上是否顯示快選按鈕由後端
+  // liffCheckVendorAccess（管理員或組長）決定，見 app.js
+  // setupVendorPicker()；一般設計師看不到也選不到。
   VENDOR_CUSTOMER_NAMES: Object.freeze([
     "宣尼",
     "覺亞",

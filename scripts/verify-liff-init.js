@@ -39,6 +39,7 @@ function runOnce() {
     isInClient: () => true,
     isLoggedIn: () => true,
     getProfile: async () => ({ displayName: "測試設計師" }),
+    getAccessToken: () => "test-access-token",
     login: () => {
       throw new Error("liff.login() 不應該在 isLoggedIn()=true 時被呼叫");
     }
@@ -65,6 +66,9 @@ function runOnce() {
       { code: "A002", name: "測試商品二", category: "宣尼1", unit: "" }
     ],
     getCurrentOrders: async () => ({ orders: [] }),
+    // 模擬有廠商快選權限，讓 setupVendorPicker() 實際跑過
+    // renderVendorPicker() 那條路徑，而不是只測到失敗時的靜默隱藏。
+    checkVendorAccess: async () => true,
     healthCheck: async () => ({ success: true })
   };
 
@@ -113,6 +117,33 @@ function runOnce() {
     throw new Error(
       "init() 過程中有未處理的 window error 事件："
       + windowErrors.map(String).join("; ")
+    );
+  }
+
+  // setupVendorPicker() 是 fire-and-forget（見 app.js init()），
+  // 可能在 statusTitle 更新之後才完成，這裡再輪詢等一下，
+  // 確保「有權限時快選按鈕真的會渲染」這條路徑也有被跑過、沒有拋錯。
+  const vendorPickerDeadline = Date.now() + 2000;
+
+  while (Date.now() < vendorPickerDeadline) {
+    if (window.document.getElementById("vendorPicker").children.length > 0) {
+      break;
+    }
+
+    await new Promise((resolve) => window.setTimeout(resolve, 50));
+  }
+
+  if (windowErrors.length > 0) {
+    throw new Error(
+      "setupVendorPicker() 過程中有未處理的 window error 事件："
+      + windowErrors.map(String).join("; ")
+    );
+  }
+
+  if (window.document.getElementById("vendorPicker").children.length === 0) {
+    throw new Error(
+      "有廠商快選權限時 renderVendorPicker() 應該要渲染按鈕，"
+      + "但 vendorPicker 目前是空的"
     );
   }
 

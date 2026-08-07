@@ -136,3 +136,24 @@ key 為（權限範圍內的擁有者）＋ `productCode` ＋ `customerName`；�
 「減少」的刪除路徑共用同一套鎖定與刷新機制。統計結束後（
 `ORDER_STATUS` 非 OPEN）禁止刪除，理由與 8.1.6／既有「統計結束禁止
 修改」規則一致。
+
+## D-016 廠商快選按鈕改為權限限定（新增「組長」權限層級）
+
+廠商客戶名稱快選按鈕原本任何人都看得到、選得到。現在新增一個介於
+管理員與設計師之間的權限「組長」（Apps Script Script Property
+`SUPERVISOR_USER_IDS`，比照 `ADMIN_USER_IDS` 的做法管理，選填，未
+設定時一律視為沒有此權限），目前**唯一**的權限就是能看到並使用廠商
+快選按鈕；除此之外與一般設計師完全相同（看不到全部叫貨、不能刪除
+別人的叫貨等）。
+
+後端新增 `action=liffCheckVendorAccess`（`Liff.gs` /
+`liffCheckVendorAccessResponse_`），一樣先用 `verifyLiffAccessToken_`
+驗證身分，回傳 `canUseVendorShortcuts`（`isAdmin() || isSupervisor()`）；
+未登入或驗證失敗一律回傳 `UNAUTHORIZED`，不洩漏權限狀態。
+
+前端不再於 `init()` 一開始就無條件呼叫 `renderVendorPicker()`；改為
+`setupVendorPicker()`，在 LIFF 登入完成、拿到 `accessToken` 後才呼叫
+`liffCheckVendorAccess`，確認為 `true` 才渲染快選按鈕。這個檢查刻意
+**不 await**、不阻擋其餘畫面就緒流程（沿用 8.1.4／8.1.5 對載入速度
+的既有堅持），任何失敗（缺少 token、逾時、後端拒絕）都預設為隱藏
+（fail closed），不影響叫貨其餘功能。
